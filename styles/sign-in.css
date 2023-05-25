@@ -1,0 +1,26 @@
+
+/* #container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 70%;
+    width: 30%;
+    background: #526D82;
+    border: 8px solid black;
+    border-radius: 20px;
+}
+form {
+    padding: 20px 40px;
+    margin: 20px;
+    background: #DDE6ED;
+    font-family: 'Open Sans', sans-serif;
+    font-size: large;
+}
+form[type="submit"] {
+    border: 2px solid #526D82;
+    border-radius: 5px;
+}
+form[type="submit"]:hover {
+    cursor: pointer;
+} */

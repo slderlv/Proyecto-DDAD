@@ -1,0 +1,15 @@
+
+button {
+    height: 10vh;
+    width: 20vw;
+    margin: 3vh;
+    background-color: #DDE6ED;
+    color: #27374D;
+    font-family: 'Open Sans', sans-serif;
+    font-size: large;
+    border: 2px solid #526D82;
+    border-radius: 5px;
+}
+button:hover {
+    cursor: pointer;
+}
