@@ -1,0 +1,33 @@
+div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #27374D;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    width: 30%;
+    background: #9DB2BF;
+    border: 8px solid #526D82;
+    border-radius: 20px;
+}
+input {
+    padding: 2vh 3vw;
+    margin: 20px;
+    background: #DDE6ED;
+    font-family: 'Open Sans', sans-serif;
+    font-size: large;
+}
+input[name="form-button"] {
+    border: 2px solid #526D82;
+    border-radius: 5px;
+}
+input[name="form-button"]:hover {
+    cursor: pointer;
+} 

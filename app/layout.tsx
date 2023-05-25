@@ -19,9 +19,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     </head>
       <body>
       <Navigation></Navigation>
-        <div id="panel">
-          {children}
-        </div>
+      {children}  
       </body>
     </html>
   );
