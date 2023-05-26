@@ -13,7 +13,7 @@ export default function SignUp() {
         if(password!== password_verification){
             return alert('Las contraseñas no coinciden')
         }
-        const response = await axios.post('http://localhost:3000/auth/register', {
+        const response = await axios.post('http://localhost:3000/users', {
             email,
             city,
             password
