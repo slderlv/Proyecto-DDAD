@@ -6,3 +6,9 @@ div {
     align-items: center;
     background: #27374D;
 }
+h1 {
+    background-color: #9DB2BF;
+    padding: 20px;
+    border: solid 2px whitesmoke;
+    border-radius: 5px;
+}

@@ -11,14 +11,14 @@ form {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 80%;
-    width: 30%;
+    height: 600px;
+    width: 400px;
     background: #9DB2BF;
     border: 8px solid #526D82;
     border-radius: 20px;
 }
 input {
-    padding: 2vh 3vw;
+    padding: 20px 40px;
     margin: 20px;
     background: #DDE6ED;
     font-family: 'Open Sans', sans-serif;

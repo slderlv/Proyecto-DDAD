@@ -13,6 +13,12 @@ const links = [{
 }, {
   label: 'Reset Password',
   route: '/reset-password'
+}, {
+  label: 'Reset Password Code',
+  route: '/reset-password-code'
+}, {
+  label: 'Change Password',
+  route: '/change-password'
 }]
 
 export function Navigation() {
