@@ -1,6 +1,6 @@
 'use client'
 import '../../styles/sign-in.css'
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import axios from 'axios'
 import { User } from '../interfaces/interfaces'
 
@@ -9,6 +9,8 @@ export default function SignIn() {
     const [password, setPassword] = React.useState('')
     const [token, setToken] = React.useState('')
     const [user, setUser] = React.useState<User>({} as User);
+    const [popupMessage, setPopupMessage] = useState('');
+    const [showPopup, setShowPopup] = useState(false);
     
     const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value)
@@ -24,10 +26,20 @@ export default function SignIn() {
             email,
             password
         })
-        const [token, user] = response.data;
+        const {token, user} = response.data;
+        
         setToken(token);
         setUser(user);
+
+        // if (!user){
+        //     setPopupMessage('Denegado');
+        // } else {
+        //     setPopupMessage('Aceptado')
+        // }
+
+        // setShowPopup(true);
         localStorage.setItem('token', token);
+        console.log(token, user)
     }
 
     return (
@@ -47,4 +59,8 @@ export default function SignIn() {
         </div>
         
     )
+}
+
+function setPopupMessage(arg0: string) {
+    throw new Error('Function not implemented.')
 }
