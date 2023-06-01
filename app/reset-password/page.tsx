@@ -1,9 +1,7 @@
 'use client'
-import React, { useState, ChangeEvent, useEffect } from 'react';
-import '../../styles/reset-password.css';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-/* import sendEmail from '../email/email';
- */
+
 export default function ResetPassword() {
   const [email, setEmail] = useState('');
   const router = useRouter();
@@ -25,6 +23,7 @@ export default function ResetPassword() {
           placeholder="Correo electrónico"
           maxLength={320}
           required
+          onChange={event => setEmail(event.target.value)}
         />
         <input
           id="form-button"

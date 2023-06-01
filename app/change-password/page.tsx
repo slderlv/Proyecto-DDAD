@@ -10,6 +10,8 @@ export default function ResetPasswordCode() {
     if (password !== passwordVerification) {
         return alert('Contraseñas no coinciden');
     }
+    let str = passwordVerification + password;
+    alert(str)
   };
 
   return (
