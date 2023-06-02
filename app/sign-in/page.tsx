@@ -1,5 +1,5 @@
 'use client'
-import React, { ChangeEvent, useState } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import { User } from '../interfaces/interfaces'
 
@@ -12,19 +12,10 @@ export default function SignIn() {
     }
     const [token, setToken] = React.useState('')
     const [user, setUser] = React.useState<User>({} as User);
-
     const [popupMessage, setPopupMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
-    
-    const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value)
-    }
 
-    const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setPassword(event.target.value)
-    }
-
-    const handleLogin = async () => {
+    const handleSignIn = async () => {
         console.log(email, password)
         const response = await axios.post('http://localhost:3000/auth/login', {
             email,
@@ -32,7 +23,6 @@ export default function SignIn() {
         })
 
         const {token, user} = response.data;
-        
         setToken(token);
         setUser(user);
 
@@ -73,6 +63,7 @@ export default function SignIn() {
                     id="UserEmail"
                     placeholder="Email"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+                    onChange={event => setEmail(event.target.value)}
                 />
 
                 <span
@@ -105,7 +96,7 @@ export default function SignIn() {
 
         <div className="relative">
             <label
-                htmlFor="UserEmail"
+                htmlFor="UserPassword"
                 className="bg-white relative block overflow-hidden rounded-md border border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
                 <input
@@ -113,6 +104,7 @@ export default function SignIn() {
                     id="UserPassword"
                     placeholder="Contraseña"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+                    onChange={event => setPassword(event.target.value)}
                 />
 
                 <span
@@ -180,6 +172,7 @@ export default function SignIn() {
                 <button
                     type="submit"
                     className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
+                    onClick={handleSignIn}
                 >
                     Inicia Sesión
                 </button>

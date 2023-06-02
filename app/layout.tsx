@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, Suspense } from 'react';
 import { Navigation } from './components/Navigation';
 import '../styles/globals.css'
 
@@ -14,8 +14,8 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
           <meta charSet="UTF-8"></meta>
     </head>
       <body>
-      {/* <Navigation></Navigation> */}
-      {children}  
+        {children} 
+        {/* <Navigation></Navigation> */}
       </body>
     </html>
   );

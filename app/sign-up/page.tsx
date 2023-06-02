@@ -143,13 +143,13 @@ export default function SignUp() {
         />
       </div>
       <div className="col-span-6 sm:col-span-3">
-        <label htmlFor="HeadlineAct" className="block text-base font-medium text-gray-900">
+        <label htmlFor="Cities" className="block text-base font-medium text-gray-900">
           Ciudad
         </label>
 
         <select
-          name="HeadlineAct"
-          id="HeadlineAct"
+          name="cities"
+          id="Cities"
           className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-base p-2"
           onChange={event => setCity(event.target.value)}
         >
