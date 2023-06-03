@@ -27,7 +27,12 @@ module.exports = {
       'black': '#000000',
       'green-300': '#6EE7B7',
       'blue-500': '#3B82F6',
-      'purple-600': '#7C3AED'
+      'purple-600': '#7C3AED',
+      'gray-100': '#F7FAFC',
+      'gray-500': '#A0AEC0',
+      'gray-600': '#4A5568',
+      'gray-700': '#2D3748',
+
     },
   },
   plugins: [],

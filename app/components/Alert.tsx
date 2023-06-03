@@ -1,10 +1,16 @@
+'use client'
+import React from "react"
+
 export function Alert(isHidden: boolean, errorMessage: string) {
-  
+  const [isOpen, setIsOpen] = React.useState(true)
+  const handleClose = () => {
+    setIsOpen(false)
+  }
     return (
         <div
             role="alert"
             className=" absolute rounded-xl border border-gray-100 bg-white p-4 shadow-xl top-20"
-            hidden={isHidden}
+            hidden={!isOpen}
           >
             <div className="flex items-start gap-4">
               <span className="text-green-600">
@@ -32,7 +38,8 @@ export function Alert(isHidden: boolean, errorMessage: string) {
                 </p>
               </div>
     
-              <button className="text-gray-500 transition hover:text-gray-600">
+              <button className="text-gray-500 transition hover:text-gray-600"
+              onClick={handleClose}>
                 <span className="sr-only">Dismiss popup</span>
     
                 <svg

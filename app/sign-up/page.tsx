@@ -17,6 +17,8 @@ export default function SignUp() {
   
 
   const handleSignUp = async () => {
+    const button = document.getElementById('loadbutton')
+    button?.ariaDisabled
     switch(true){
       case firstName.trim() === '':
         setError('Ingrese el nombre')
@@ -63,6 +65,7 @@ export default function SignUp() {
   }
     // ----------------------------------------------------------------
     return (
+
 <section className="bg-purple">
   <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
     <section
@@ -200,9 +203,11 @@ export default function SignUp() {
 
       <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
         <button
-          className="inline-block shrink-0 rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+          id='loadbutton'
+          className="buttonload inline-block shrink-0 rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
           onClick={handleSignUp}
         >
+          <i id="button-i" className='fa fa-spinner fa-spin'></i>
           Crea una cuenta
         </button>
 
