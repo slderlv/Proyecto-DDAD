@@ -1,8 +1,9 @@
 'use client'
 import React from 'react'
 import axios from 'axios'
-import { User } from '../interfaces/interfaces'
+import { Users } from '../interfaces/interfaces'
 import { Alert } from '../components/Alert';
+import Router from 'next/router';
 
 export default function SignUp() {
   const [firstName, setFirstName] = React.useState('')
@@ -12,38 +13,40 @@ export default function SignUp() {
   const [password, setPassword] = React.useState('')
   const [passwordConfirmation, setPasswordConfirmation] = React.useState('')
   const [token, setToken] = React.useState('')
-  const [user, setUser] = React.useState<User>({} as User);
+  const [user, setUser] = React.useState<Users>({} as Users);
   const [error, setError] = React.useState('');
-  
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [data, setData] = React.useState<any>([]);
 
-  const handleSignUp = async () => {
-    const button = document.getElementById('loadbutton')
-    button?.ariaDisabled
+  const checkErrors = ():boolean => {
     switch(true){
       case firstName.trim() === '':
         setError('Ingrese el nombre')
-        break;
+        return true;
       case lastName.trim() === '':
         setError('Ingrese su apellido')
-        break;
+        return true;
       case email.trim() === '':
         setError('Ingrese su correo electrónico')
-        break;
+        return true;
       case city === '':
         setError('Seleccione una ciudad')
-        break;
+        return true;
       case password.trim() === '':
         setError('Ingrese su contraseña')
-        break;
+        return true;
       case passwordConfirmation.trim() === '':
         setError('Confirme su contraseña')
-        break;
-      case password!== passwordConfirmation:
-        setError('Las contraseñas no coinciden')
-        break;
+        return true;
     }
-    
-    
+    setError('')
+    return false;
+  }
+
+  const handleSignUp = async () => {
+    /* if(!checkErrors()) return; */
+    setLoading(true)
+    setData([])
     try {
       const response = await axios.post('http://localhost:3000/users', {
           firstName,
@@ -53,17 +56,20 @@ export default function SignUp() {
           password,
           passwordConfirmation
       })
-      console.log(response)
+      setData(response.data)
+      setLoading(false)
       const {token, user} = response.data;
       setToken(token);
       setUser(user);
       localStorage.setItem('token', token);
-    } catch (error) {
-      console.log(error)
+      if(!(typeof window === undefined)) { window.history.pushState(null, '', '/sign-in'); window.location.reload(); }
+
+    } catch (e: unknown) {
+      console.log(e);
+      setError('No está la base de datos');
+      return [];
     }
-    
   }
-    // ----------------------------------------------------------------
     return (
 
 <section className="bg-purple">
@@ -93,7 +99,7 @@ export default function SignUp() {
       aria-label="Main"
       className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6 h-full bg-gradient-to-tl from-color1 to-purple"
     >
-      <div id="signup" className="max-w-xl lg:max-w-3xl p-7 bg-color4 shadow-lg shadow-black">
+      <div id="signup" className="max-w-xl lg:max-w-3xl p-7 bg-gradient-to-b from-color4 to-color3 shadow-lg shadow-black">
         <h1
           className="block text-3xl font-semibold text-gray-700"
         >¡Regístrate ahora!</h1>
@@ -204,14 +210,20 @@ export default function SignUp() {
       <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
         <button
           id='loadbutton'
-          className="buttonload inline-block shrink-0 rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+          className="inline-block w-55 justify-center items-center rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
           onClick={handleSignUp}
-        >
-          <i id="button-i" className='fa fa-spinner fa-spin'></i>
-          Crea una cuenta
+        >{!loading ? (
+          'Crea una cuenta'
+        ) : (
+          <>
+            <span className='mx-3 border-spacing-1'>Cargando&nbsp;</span>
+            <i id="button-i" className='fa fa-spinner fa-spin'></i>
+          </>
+        )}
+          
         </button>
 
-        <p className="mt-4 text-base text-gray-500 sm:mt-0">
+        <p className="mt-4 text-base text-gray-700 font-semibold sm:mt-0">
           ¿Ya tienes una cuenta?{" "}
           <a href="/sign-in" className="text-gray-700 underline">
             Inicia sesión

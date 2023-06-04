@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import axios from 'axios'
-import { User } from '../interfaces/interfaces'
+import { Users } from '../interfaces/interfaces'
 
 export default function SignIn() {
     const [email, setEmail] = React.useState('')
@@ -11,7 +11,7 @@ export default function SignIn() {
         setIsPasswordVisible((prevState) => !prevState);
     }
     const [token, setToken] = React.useState('')
-    const [user, setUser] = React.useState<User>({} as User);
+    const [user, setUser] = React.useState<Users>({} as Users);
     const [popupMessage, setPopupMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
 
@@ -43,7 +43,7 @@ export default function SignIn() {
     <div className="mx-auto max-w-lg text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Bienvenido a Metal Pipes Sign In</h1>
 
-        <p className="mt-4 text-gray-500">
+        <p className="mt-4 text-black">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Et libero nulla
         eaque error neque ipsa culpa autem, at itaque nostrum!
         </p>
@@ -67,7 +67,7 @@ export default function SignIn() {
                 />
 
                 <span
-                    className="absolute start-3 top-3 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
+                    className="absolute start-3 top-3 -translate-y-1/2 text-xs text-black transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
                 >
                     Email
                 </span>
@@ -108,13 +108,13 @@ export default function SignIn() {
                 />
 
                 <span
-                    className="absolute start-3 top-3 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
+                    className="absolute start-3 top-3 -translate-y-1/2 text-xs text-black transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
                 >
                     Contraseña
                 </span>
             </label>
             <button
-                className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600"
+                className="absolute inset-y-0 right-0 flex items-center px-4 text-black"
                 onClick={togglePasswordVisibility}
             >
                 {isPasswordVisible ? (
@@ -159,11 +159,11 @@ export default function SignIn() {
 
         <div className="flex items-center justify-between">
             <div className="flex items-center justify-center flex-col">
-                <p className="text-base text-gray-500 mb-2">
+                <p className="text-base text-black mb-2">
                     ¿Aún no tienes cuenta?&nbsp;
                     <a className="underline" href="/sign-up">Regístrate</a>
                 </p>
-                <p className="text-base text-gray-500">
+                <p className="text-base text-black">
                     ¿Olvidaste tu contraseña?&nbsp;
                     <a className="underline" href="/reset-password">Recupérala</a>
                 </p>
