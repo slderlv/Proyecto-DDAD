@@ -2,8 +2,6 @@
 import React from 'react'
 import axios from 'axios'
 import { Users } from '../interfaces/interfaces'
-import { Alert } from '../components/Alert';
-import Router from 'next/router';
 
 export default function SignUp() {
   const [firstName, setFirstName] = React.useState('')
@@ -18,57 +16,52 @@ export default function SignUp() {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [data, setData] = React.useState<any>([]);
 
-  const checkErrors = ():boolean => {
-    switch(true){
-      case firstName.trim() === '':
-        setError('Ingrese el nombre')
-        return true;
-      case lastName.trim() === '':
-        setError('Ingrese su apellido')
-        return true;
-      case email.trim() === '':
-        setError('Ingrese su correo electrónico')
-        return true;
-      case city === '':
-        setError('Seleccione una ciudad')
-        return true;
-      case password.trim() === '':
-        setError('Ingrese su contraseña')
-        return true;
-      case passwordConfirmation.trim() === '':
-        setError('Confirme su contraseña')
-        return true;
+  const isValid = ():boolean => {
+    switch (true) {
+      case firstName.trim().length === 0:
+        return false
+      case lastName.trim().length === 0:
+        return false
+      case email.trim().length === 0:
+        return false
+      case city.trim().length === 0:
+        return false
+    case password.trim().length === 0:
+        return false  
+    case passwordConfirmation.trim().length === 0:
+        return false  
     }
-    setError('')
-    return false;
+    return true;
   }
-
   const handleSignUp = async () => {
-    /* if(!checkErrors()) return; */
-    setLoading(true)
-    setData([])
-    try {
-      const response = await axios.post('http://localhost:3000/users', {
-          firstName,
-          lastName,
-          email,
-          city,
-          password,
-          passwordConfirmation
-      })
-      setData(response.data)
-      setLoading(false)
-      const {token, user} = response.data;
-      setToken(token);
-      setUser(user);
-      localStorage.setItem('token', token);
-      if(!(typeof window === undefined)) { window.history.pushState(null, '', '/sign-in'); window.location.reload(); }
+    if(isValid()) {
+      setData([])
+      try {
+        const response = await axios.post('http://localhost:3000/users', {
+            firstName,
+            lastName,
+            email,
+            city,
+            password,
+            passwordConfirmation
+        })
+        setData(response.data)
+        setLoading(false)
+        const {token, user} = response.data;
+        setToken(token);
+        setUser(user);
+        localStorage.setItem('token', token);
+        if(!(typeof window === undefined)) { window.history.pushState(null, '', '/sign-in'); window.location.reload(); }
 
-    } catch (e: unknown) {
-      console.log(e);
-      setError('No está la base de datos');
-      return [];
+      } catch (e: unknown) {
+        console.log(e);
+        alert('Error 500: Internal Server Error')
+        return [];
+      }
+    } else {
+      alert('Complete todos los campos')
     }
+    
   }
     return (
 
@@ -118,6 +111,7 @@ export default function SignUp() {
             name="first_name"
             className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
             onChange={event => setFirstName(event.target.value)}
+            required
           />
       </div>
 
@@ -135,6 +129,7 @@ export default function SignUp() {
           name="last_name"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setLastName(event.target.value)}
+          required
         />
       </div>
 
@@ -149,6 +144,7 @@ export default function SignUp() {
           name="email"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setEmail(event.target.value)}
+          required
         />
       </div>
       <div className="col-span-6 sm:col-span-3">
@@ -161,6 +157,7 @@ export default function SignUp() {
           id="Cities"
           className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-base p-2"
           onChange={event => setCity(event.target.value)}
+          required
         >
           <option value="">Seleccione una opción</option>
           <option value="coquimbo">Coquimbo</option>
@@ -187,6 +184,7 @@ export default function SignUp() {
           name="password"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setPassword(event.target.value)}
+          required
         />
       </div>
 
@@ -204,6 +202,7 @@ export default function SignUp() {
           name="password_confirmation"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setPasswordConfirmation(event.target.value)}
+          required
         />
       </div>
 
@@ -233,7 +232,6 @@ export default function SignUp() {
           </div>
         </form>
       </div>
-      {Alert(error==='',error)}
     </main>
   </div>
 </section>

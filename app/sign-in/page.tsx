@@ -15,16 +15,33 @@ export default function SignIn() {
     const [popupMessage, setPopupMessage] = useState('');
     const [showPopup, setShowPopup] = useState(false);
 
+    const isValid = ():boolean => {
+        switch (true) {
+          case email.trim().length === 0:
+            return false;
+          case password.trim().length === 0:
+            return false;
+        }
+        return true;
+    }
     const handleSignIn = async () => {
-        console.log(email, password)
-        const response = await axios.post('http://localhost:3000/auth/login', {
-            email,
-            password
-        })
-
-        const {token, user} = response.data;
-        setToken(token);
-        setUser(user);
+        if(isValid()) {
+            try {
+                const response = await axios.post('http://localhost:3000/auth/login', {
+                email,
+                password
+                })
+                console.log(email, password)
+                const {token, user} = response.data;
+                setToken(token);
+                setUser(user);
+                localStorage.setItem('token', token);
+            console.log(token, user)
+            } catch (e:unknown) {
+                console.log(e)
+                alert('Error 500: Internal Server Error')
+            }
+        }
 
         // if (!user){
         //     setPopupMessage('Denegado');
@@ -33,8 +50,7 @@ export default function SignIn() {
         // }
 
         // setShowPopup(true);
-        localStorage.setItem('token', token);
-        console.log(token, user)
+        
     }
 
     return (
@@ -64,6 +80,7 @@ export default function SignIn() {
                     placeholder="Email"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
                     onChange={event => setEmail(event.target.value)}
+                    required
                 />
 
                 <span
@@ -105,6 +122,7 @@ export default function SignIn() {
                     placeholder="Contraseña"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
                     onChange={event => setPassword(event.target.value)}
+                    required
                 />
 
                 <span

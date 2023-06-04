@@ -1,24 +1,36 @@
 'use client'
 import React from 'react'
 import axios from 'axios'
-import { User } from '../interfaces/interfaces'
+import { Users } from '../interfaces/interfaces'
 
 export default function SignIn() {
   const [email, setEmail] = React.useState('')
   const [token, setToken] = React.useState('')
-  const [user, setUser] = React.useState<User>({} as User);
+  const [user, setUser] = React.useState<Users>({} as Users);
   const [popupMessage, setPopupMessage] = React.useState('');
   const [showPopup, setShowPopup] = React.useState(false);
 
-  const handleResetPassword = async () => {
-      const response = await axios.post('http://localhost:3000/forgot', {
-          email
-      })
-      
-      const {token, user} = response.data;
-      setToken(token);
-      setUser(user);
 
+  const isValid = ():boolean => {
+    if (email.trim().length === 0) return false;
+    return true;
+  }
+  const handleResetPassword = async () => {
+      if (isValid()) {
+        try {
+            const response = await axios.post('http://localhost:3000/forgot', {
+                email
+            })
+            const {token, user} = response.data;
+            setToken(token);
+            setUser(user);
+            localStorage.setItem('token', token);
+            console.log(token, user)
+        } catch (e: unknown) {
+            console.log(e);
+            alert('Error 505: Internal Server Error')
+        }
+      }
       // if (!user){
       //     setPopupMessage('Denegado');
       // } else {
@@ -26,8 +38,7 @@ export default function SignIn() {
       // }
 
       // setShowPopup(true);
-      localStorage.setItem('token', token);
-      console.log(token, user)
+      
   }
 
   return (
@@ -57,6 +68,7 @@ export default function SignIn() {
                     placeholder="Email"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
                     onChange={event => setEmail(event.target.value)}
+                    required
                 />
 
                 <span
