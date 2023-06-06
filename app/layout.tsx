@@ -1,5 +1,4 @@
 import React, { ReactNode, Suspense } from 'react';
-import { Navigation } from './components/Navigation';
 import '../styles/globals.css'
 
 interface RootLayoutProps {
@@ -16,7 +15,6 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     </head>
       <body>
         {children} 
-        {/* <Navigation></Navigation> */}
       </body>
     </html>
   );

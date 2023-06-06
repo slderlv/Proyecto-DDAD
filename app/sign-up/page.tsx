@@ -19,17 +19,29 @@ export default function SignUp() {
   const isValid = ():boolean => {
     switch (true) {
       case firstName.trim().length === 0:
+        setError('Ingrese un nombre')
         return false
       case lastName.trim().length === 0:
+        setError('Ingrese un apellido')
         return false
       case email.trim().length === 0:
+        setError('Ingrese un correo electrónico')
         return false
       case city.trim().length === 0:
+        setError('Seleccione una ciudad')
         return false
-    case password.trim().length === 0:
+      case password.trim().length === 0:
+        setError('Ingrese una contraseña')
         return false  
-    case passwordConfirmation.trim().length === 0:
+      case passwordConfirmation.trim().length === 0:
+        setError('Confirme la contraseña')
         return false  
+      case password!== passwordConfirmation:
+        setError('Las contraseñas no coinciden')
+        return false
+      case email.split('@').length === 1:
+        setError('Ingrese un correo electrónico valido')
+        return false
     }
     return true;
   }
@@ -59,7 +71,7 @@ export default function SignUp() {
         return [];
       }
     } else {
-      alert('Complete todos los campos')
+      alert(error)
     }
     
   }

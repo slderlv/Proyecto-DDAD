@@ -26,6 +26,7 @@ export default function SignIn() {
             setUser(user);
             localStorage.setItem('token', token);
             console.log(token, user)
+            if(!(typeof window === undefined)) { window.history.pushState(null, '', '/sign-in'); window.location.reload(); }
         } catch (e: unknown) {
             console.log(e);
             alert('Error 505: Internal Server Error')

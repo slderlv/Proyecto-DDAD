@@ -6,21 +6,28 @@ import { Users } from '../interfaces/interfaces'
 export default function SignIn() {
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+    const [loading, setLoading] = useState(false)
     function togglePasswordVisibility() {
         setIsPasswordVisible((prevState) => !prevState);
     }
+    const [error, setError] = React.useState('')
     const [token, setToken] = React.useState('')
-    const [user, setUser] = React.useState<Users>({} as Users);
-    const [popupMessage, setPopupMessage] = useState('');
-    const [showPopup, setShowPopup] = useState(false);
+    const [user, setUser] = React.useState<Users>({} as Users)
+    const [popupMessage, setPopupMessage] = useState('')
+    const [showPopup, setShowPopup] = useState(false)
 
     const isValid = ():boolean => {
         switch (true) {
-          case email.trim().length === 0:
-            return false;
-          case password.trim().length === 0:
-            return false;
+            case email.trim().length === 0:
+                setError('Ingrese un correo electrónico')
+                return false;
+            case password.trim().length === 0:
+                setError('Ingrese una contraseña')
+                return false;
+            case email.split('@').length <= 1:
+                setError('Ingrese un correo electrónico válido')
+                return false
         }
         return true;
     }
@@ -36,11 +43,15 @@ export default function SignIn() {
                 setToken(token);
                 setUser(user);
                 localStorage.setItem('token', token);
-            console.log(token, user)
+                console.log(token, user)
+                alert('Acceso correcto')
+                if(!(typeof window === undefined)) { window.history.pushState(null, '', '/menu'); window.location.reload(); }
             } catch (e:unknown) {
                 console.log(e)
                 alert('Error 500: Internal Server Error')
             }
+        } else {
+            alert(error)
         }
 
         // if (!user){
@@ -191,8 +202,14 @@ export default function SignIn() {
                     type="submit"
                     className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
                     onClick={handleSignIn}
-                >
-                    Inicia Sesión
+                >{!loading ? (
+                    'Inicia Sesión'
+                  ) : (
+                    <>
+                      <span className='mx-3 border-spacing-1'>Cargando&nbsp;</span>
+                      <i id="button-i" className='fa fa-spinner fa-spin'></i>
+                    </>
+                  )}
                 </button>
             </div>
         </div>
