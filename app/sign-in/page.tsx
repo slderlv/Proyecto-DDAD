@@ -38,14 +38,16 @@ export default function SignIn() {
                 email,
                 password
                 })
-                console.log(email, password)
-                const {token, user} = response.data;
-                setToken(token);
-                setUser(user);
-                localStorage.setItem('token', token);
-                console.log(token, user)
-                alert('Acceso correcto')
-                if(!(typeof window === undefined)) { window.history.pushState(null, '', '/menu'); window.location.reload(); }
+                if(response.data !== undefined){
+                    const {token, user} = response.data;
+                    setToken(token);
+                    setUser(user);
+                    localStorage.setItem('token', token);
+                    alert('Acceso correcto')
+                    if(!(typeof window === undefined)) { window.history.pushState(null, '', '/menu'); window.location.reload(); }
+                } else {
+                    alert('Usuario o contraseña incorrectos')
+                }
             } catch (e:unknown) {
                 console.log(e)
                 alert('Error 500: Internal Server Error')
