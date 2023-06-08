@@ -43,12 +43,14 @@ export default function SignIn() {
   }
 
   return (
-<div className="bg-black h-screen w-screen flex items-center justify-center">
-    <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4">
+<div className="h-screen w-screen flex items-center justify-center"
+    style={{backgroundImage: 'url(/purple-background3.jpg)'}}>
+    
+    <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 backdrop-blur-lg rounded-md bg-white bg-opacity-25 ">
     <div className="mx-auto max-w-lg text-center">
-        <h1 className="text-2xl font-bold sm:text-3xl">Recupera tu contraseña</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl text-gray-100">Recupera tu contraseña</h1>
 
-        <p className="mt-4 text-gray-500">
+        <p className="mt-4 text-gray-100">
         Ingresa tu correo electrónico para recibir una contraseña
         temporal, con esta contraseña podrás acceder a tu cuenta.
         </p>

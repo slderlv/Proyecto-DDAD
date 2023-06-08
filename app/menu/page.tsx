@@ -1,5 +1,5 @@
 'use client'
-import { SetStateAction, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { SideMenu } from "../components/SideMenu"
 import { User_Information, Users } from "../interfaces/interfaces"
 
@@ -26,6 +26,14 @@ interface Product{
 
 export default function Menu() {
   const [reservation, setReservation] = useState<Product[]>([])
+  const [searchValue, setSearchValue] = useState('')
+  const searchByTitle = (title: string): Product | null => {
+    const foundProduct = [p1,p2].find((product) =>
+      product.title.toLowerCase().includes(title.toLowerCase())
+    );
+    
+    return foundProduct || null;
+  };
   const p1: Product = {
     id: 123,
     imageSrc: "donquijote.jpg", 
@@ -38,6 +46,12 @@ export default function Menu() {
     title: "Serie Schaum Estadística",
     state: "No disponible",
   }
+  const optionList = {
+    'Title, DESC': [p1, p2, p1].sort((a, b) => b.title.localeCompare(a.title)),
+    'Title, ASC': [p2, p2, p1].sort((a, b) => a.title.localeCompare(b.title)),
+    'Price, DESC': [p2, p2, p2], // Lista sin ordenar por título
+    'Price, ASC': [p1, p1, p1], // Lista sin ordenar por título
+  };
   useEffect(() => {
     setReservation([p1, p2]);
   }, []);
@@ -121,7 +135,7 @@ export default function Menu() {
                     type="button"
                     className="text-sm text-gray-900 underline underline-offset-4"
                   >
-                    Reset
+                    Buscar
                   </button>
                 </header>
 
@@ -189,14 +203,23 @@ export default function Menu() {
               id="FilterInput"
               placeholder="Nombre del producto"
               className="w-full rounded-md border-gray-200 shadow-sm sm:text-sm px-2"
+              onChange={event => setSearchValue(event.target.value)}
             />
           </label>
         </div>
         <button
               type="button"
               className="text-sm text-gray-900 underline underline-offset-4 mb-3"
+              onClick={event => {
+                const searchResults: Product | null = searchByTitle(searchValue);
+                if (searchResults) {
+                  setReservation([searchResults]);
+                } else {
+                  setReservation([]);
+                }
+              }}
             >
-              Reset
+              Buscar
             </button>
       </div>
 
@@ -204,21 +227,11 @@ export default function Menu() {
         <label htmlFor="SortBy" className="sr-only">Ordenar por</label>
 
         <select id="SortBy" className="h-10 rounded border-gray-300 text-sm"
-        onChange={event => {
-          const selectedValue = event.target.value;
-          if (selectedValue === "Title, DESC") {
-            const list = [p1,p2,p2]
-            setReservation(list)
-          } else if (selectedValue === "Title, ASC") {
-            const list = [p1,p1,p1]
-            setReservation(list)
-          } else if (selectedValue === "Price, DESC") {
-            const list = [p2,p2,p2]
-            setReservation(list);
-          } else if (selectedValue === "Price, ASC") {
-            const list = [p2,p1,p1]
-            setReservation(list);
-          }
+        onChange={(event) => {
+          const selectedValue: keyof typeof optionList = event.target.value as keyof typeof optionList;
+          
+          const list = optionList[selectedValue] || [];
+          setReservation(list);
         }}
         >
           <option>Ordenar por</option>

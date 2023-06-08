@@ -40,7 +40,10 @@ export default function SignUp() {
         setError('Las contraseñas no coinciden')
         return false
       case email.split('@').length === 1:
-        setError('Ingrese un correo electrónico valido')
+        setError('Ingrese un correo electrónico válido')
+        return false
+      case email.split('.').length === 1:
+        setError('Ingrese un correo electrónico válido')
         return false
     }
     return true;
@@ -84,7 +87,7 @@ export default function SignUp() {
     >
       <img
         alt="purple background"
-        src="ORLDWW0.jpg"
+        src="purple-background2.jpg"
         className="absolute inset-0 h-full w-full object-cover opacity-80"
       />
 
@@ -94,8 +97,7 @@ export default function SignUp() {
         </h2>
 
         <p className="mt-4 leading-relaxed text-white/90">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi nam
-          dolorum aliquam, quibusdam aperiam voluptatum.
+          Regístrate para empezar a usar nuestros servicios 🚀
         </p>
       </div>
     </section>

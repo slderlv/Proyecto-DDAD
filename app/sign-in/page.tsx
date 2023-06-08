@@ -11,34 +11,37 @@ export default function SignIn() {
     function togglePasswordVisibility() {
         setIsPasswordVisible((prevState) => !prevState);
     }
-    const [error, setError] = React.useState('')
     const [token, setToken] = React.useState('')
     const [user, setUser] = React.useState<Users>({} as Users)
     const [popupMessage, setPopupMessage] = useState('')
     const [showPopup, setShowPopup] = useState(false)
 
-    const isValid = ():boolean => {
-        switch (true) {
-            case email.trim().length === 0:
-                setError('Ingrese un correo electrónico')
-                return false;
-            case password.trim().length === 0:
-                setError('Ingrese una contraseña')
-                return false;
-            case email.split('@').length <= 1:
-                setError('Ingrese un correo electrónico válido')
-                return false
+    const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
+
+    const isValid = (): boolean => {
+        if (email.trim().length === 0) {
+            alert('Ingrese un correo electrónico');
+            return false;
+        }
+        if (password.trim().length === 0) {
+            alert('Ingrese una contraseña');
+            return false;
+        }
+        if (!regex.test(email)) {
+            alert('Ingrese un correo electrónico válido');
+            return false;
         }
         return true;
-    }
-    const handleSignIn = async () => {
+    };
+    const handleSignIn = async (event: any) => {
+        event.preventDefault()
         if(isValid()) {
             try {
                 const response = await axios.post('http://localhost:3000/auth/login', {
                 email,
                 password
                 })
-                if(response.data !== undefined){
+                if(response.data !== ''){
                     const {token, user} = response.data;
                     setToken(token);
                     setUser(user);
@@ -52,8 +55,6 @@ export default function SignIn() {
                 console.log(e)
                 alert('Error 500: Internal Server Error')
             }
-        } else {
-            alert(error)
         }
 
         // if (!user){
@@ -67,14 +68,13 @@ export default function SignIn() {
     }
 
     return (
-<div className="bg-black h-screen w-screen flex items-center justify-center">
-    <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4">
+<div className=" bg-gradient-radial from-color3 via-color2 to-color1 h-screen w-screen flex items-center justify-center">
+    <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4 rounded-sm shadow-xl">
     <div className="mx-auto max-w-lg text-center">
-        <h1 className="text-2xl font-bold sm:text-3xl">Bienvenido a Metal Pipes Sign In</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl">Inicia sesión</h1>
 
         <p className="mt-4 text-black">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Et libero nulla
-        eaque error neque ipsa culpa autem, at itaque nostrum!
+        Ingresa tu correo electrónico y contraseña para continuar.
         </p>
     </div>
 
@@ -88,12 +88,14 @@ export default function SignIn() {
                 className="bg-white relative block overflow-hidden rounded-md border border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
                 <input
-                    type="email"
+                    type="text"
                     id="UserEmail"
                     placeholder="Email"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
-                    onChange={event => setEmail(event.target.value)}
-                    required
+                    onChange={event => {
+                        setEmail(event.target.value)
+                        event.preventDefault()
+                    }}
                 />
 
                 <span
@@ -134,8 +136,10 @@ export default function SignIn() {
                     id="UserPassword"
                     placeholder="Contraseña"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
-                    onChange={event => setPassword(event.target.value)}
-                    required
+                    onChange={event => {
+                        setPassword(event.target.value)
+                        event.preventDefault()
+                    }}
                 />
 
                 <span
@@ -146,7 +150,10 @@ export default function SignIn() {
             </label>
             <button
                 className="absolute inset-y-0 right-0 flex items-center px-4 text-black"
-                onClick={togglePasswordVisibility}
+                onClick={(e) => {
+                    e.preventDefault()
+                    togglePasswordVisibility()
+                }}
             >
                 {isPasswordVisible ? (
                 <svg
