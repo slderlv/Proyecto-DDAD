@@ -1,22 +1,9 @@
 'use client'
 import { useEffect, useState } from "react"
 import { SideMenu } from "../components/SideMenu"
-import { User_Information, Users } from "../interfaces/interfaces"
+import axios from "axios"
+import { UserProfile } from "@/config/interfaces"
 
-const user_info: User_Information = {
-    birthdate: new Date("1990-01-01"),
-    first_name: "John",
-    last_name: "Frusciante"
-}
-const user: Users = {
-    id: 1,
-    email: "algo@algo.com",
-    city: "coquimbo",
-    password: "123",
-    role: null,
-    createdAt: 0,
-    info: user_info,
-}
 interface Product{
   id: number,
   imageSrc: string,
@@ -25,14 +12,19 @@ interface Product{
 }
 
 export default function Menu() {
+  const [user, setUser] = useState<UserProfile>({} as UserProfile)
   const [reservation, setReservation] = useState<Product[]>([])
   const [searchValue, setSearchValue] = useState('')
-  const searchByTitle = (title: string): Product | null => {
-    const foundProduct = [p1,p2].find((product) =>
+  const searchByTitle = (title: string): Product[] => {
+    if (title === '') {
+      return list;
+    }
+  
+    const foundProducts = list.filter((product) =>
       product.title.toLowerCase().includes(title.toLowerCase())
     );
     
-    return foundProduct || null;
+    return foundProducts;
   };
   const p1: Product = {
     id: 123,
@@ -46,6 +38,31 @@ export default function Menu() {
     title: "Serie Schaum Estadística",
     state: "No disponible",
   }
+  const p3: Product = {
+    id: 456,
+    imageSrc: "piedrafilosofal.jpg", 
+    title: "Harry Potter y la Piedra Filosofal",
+    state: "Disponible"
+  }
+  const p4: Product = {
+    id: 789,
+    imageSrc: "codigocivil.jpg", 
+    title: "Código Civil Edición Oficial",
+    state: "No Disponible"
+  }
+  const p5: Product = {
+    id: 777,
+    imageSrc: "sala1.jpg", 
+    title: "Sala 1",
+    state: "No Disponible"
+  }
+  const p6: Product = {
+    id: 555,
+    imageSrc: "sala2.jpg", 
+    title: "Sala 2",
+    state: "Disponible"
+  }
+  const list:Product[] = [p1,p2,p3,p4,p5,p6]
   const optionList = {
     'Title, DESC': [p1, p2, p1].sort((a, b) => b.title.localeCompare(a.title)),
     'Title, ASC': [p2, p2, p1].sort((a, b) => a.title.localeCompare(b.title)),
@@ -53,8 +70,26 @@ export default function Menu() {
     'Price, ASC': [p1, p1, p1], // Lista sin ordenar por título
   };
   useEffect(() => {
-    setReservation([p1, p2]);
+    setReservation(list);
   }, []);
+  useEffect(() => {
+    const getProfile = async () => {
+      const token = localStorage.getItem('token');
+      if(!token) {
+        window.location.href = '/sign-in';
+      }
+      const ENDPOINT = 'http://localhost:3000/users/profile'
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+      const response = await axios.get(ENDPOINT, config)
+      const dataResponse: UserProfile = response.data
+      setUser(dataResponse)
+    }
+    getProfile()
+  }, []) /* puede que esta wea se lo pitee [] */
   
     return(
 <div className="flex">
@@ -67,10 +102,8 @@ export default function Menu() {
         Colección
       </h2>
 
-      <p className="mt-4 max-w-md text-gray-500">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Itaque
-        praesentium cumque iure dicta incidunt est ipsam, officia dolor fugit
-        natus?
+      <p className="mt-4 max-w-md text-gray-900">
+        Aquí podrás encontrar libros tanto recreativos como para estudiar. También podrás encontrar salas de estudio para pedir prestadas.
       </p>
     </header>
 
@@ -211,12 +244,8 @@ export default function Menu() {
               type="button"
               className="text-sm text-gray-900 underline underline-offset-4 mb-3"
               onClick={event => {
-                const searchResults: Product | null = searchByTitle(searchValue);
-                if (searchResults) {
-                  setReservation([searchResults]);
-                } else {
-                  setReservation([]);
-                }
+                const searchResults: Product[] = searchByTitle(searchValue);
+                setReservation(searchResults);
               }}
             >
               Buscar

@@ -1,80 +1,73 @@
 'use client'
 import React from 'react'
 import axios from 'axios'
-import { Users } from '../interfaces/interfaces'
+import { useRouter } from 'next/navigation'
 
 export default function SignUp() {
   const [firstName, setFirstName] = React.useState('')
   const [lastName, setLastName] = React.useState('')
+  const [nickname, setNickname] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [city, setCity] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [passwordConfirmation, setPasswordConfirmation] = React.useState('')
-  const [token, setToken] = React.useState('')
-  const [user, setUser] = React.useState<Users>({} as Users);
-  const [error, setError] = React.useState('');
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [data, setData] = React.useState<any>([]);
+  const [loading, setLoading] = React.useState<boolean>(false)
+  const router = useRouter()
+  const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
   const isValid = ():boolean => {
     switch (true) {
       case firstName.trim().length === 0:
-        setError('Ingrese un nombre')
+        alert('Ingrese un nombre')
         return false
       case lastName.trim().length === 0:
-        setError('Ingrese un apellido')
+        alert('Ingrese un apellido')
+        return false
+      case nickname.trim().length === 0:
+        alert('Ingrese un nombre de usuario')
         return false
       case email.trim().length === 0:
-        setError('Ingrese un correo electrónico')
+        alert('Ingrese un correo electrónico')
         return false
       case city.trim().length === 0:
-        setError('Seleccione una ciudad')
+        alert('Seleccione una ciudad')
         return false
       case password.trim().length === 0:
-        setError('Ingrese una contraseña')
+        alert('Ingrese una contraseña')
         return false  
       case passwordConfirmation.trim().length === 0:
-        setError('Confirme la contraseña')
+        alert('Confirme la contraseña')
         return false  
       case password!== passwordConfirmation:
-        setError('Las contraseñas no coinciden')
+        alert('Las contraseñas no coinciden')
         return false
-      case email.split('@').length === 1:
-        setError('Ingrese un correo electrónico válido')
-        return false
-      case email.split('.').length === 1:
-        setError('Ingrese un correo electrónico válido')
-        return false
+      case (!regex.test(email)):
+        alert('Ingrese un correo electrónico válido');
+        return false;
     }
     return true;
   }
-  const handleSignUp = async () => {
+  const handleSignUp = async (event: any) => {
+    event.preventDefault()
     if(isValid()) {
-      setData([])
       try {
-        const response = await axios.post('http://localhost:3000/users', {
-            firstName,
-            lastName,
-            email,
-            city,
-            password,
-            passwordConfirmation
-        })
-        setData(response.data)
-        setLoading(false)
-        const {token, user} = response.data;
-        setToken(token);
-        setUser(user);
-        localStorage.setItem('token', token);
-        if(!(typeof window === undefined)) { window.history.pushState(null, '', '/sign-in'); window.location.reload(); }
-
+        const ENDPOINT = 'http://localhost:3000/users'
+        const data = {
+          firstName: firstName,
+          lastName: lastName,
+          nickname: nickname,
+          email: email,
+          city: city,
+          password: password,
+          passwordConfirmation: passwordConfirmation
+        }
+        const response = await axios.post(ENDPOINT, data)
+        alert('Usuario creado correctamente')
+        router.push('/sign-in')
       } catch (e: unknown) {
-        console.log(e);
-        alert('Error 500: Internal Server Error')
+        alert(e)
         return [];
       }
-    } else {
-      alert(error)
     }
     
   }
@@ -90,9 +83,10 @@ export default function SignUp() {
         src="purple-background2.jpg"
         className="absolute inset-0 h-full w-full object-cover opacity-80"
       />
-
+      <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
+        onClick={event => window.location.href = "/"}/>
       <div className="hidden lg:relative lg:block lg:p-12">
-        <h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl animate-bounce">
+        <h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
           Bienvenido a Metal Pipes Team 
         </h2>
 
@@ -125,7 +119,6 @@ export default function SignUp() {
             name="first_name"
             className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
             onChange={event => setFirstName(event.target.value)}
-            required
           />
       </div>
 
@@ -143,7 +136,23 @@ export default function SignUp() {
           name="last_name"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setLastName(event.target.value)}
-          required
+        />
+      </div>
+
+      <div className="col-span-6 sm:col-span-3">
+        <label
+          htmlFor="NickName"
+          className="block text-base font-medium text-gray-700"
+        >
+          Nombre de usuario
+        </label>
+
+        <input
+          type="text"
+          id="NickName"
+          name="nick_name"
+          className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
+          onChange={event => setNickname(event.target.value)}
         />
       </div>
 
@@ -158,7 +167,6 @@ export default function SignUp() {
           name="email"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setEmail(event.target.value)}
-          required
         />
       </div>
       <div className="col-span-6 sm:col-span-3">
@@ -171,7 +179,6 @@ export default function SignUp() {
           id="Cities"
           className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-base p-2"
           onChange={event => setCity(event.target.value)}
-          required
         >
           <option value="">Seleccione una opción</option>
           <option value="coquimbo">Coquimbo</option>
@@ -198,7 +205,6 @@ export default function SignUp() {
           name="password"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setPassword(event.target.value)}
-          required
         />
       </div>
 
@@ -216,7 +222,6 @@ export default function SignUp() {
           name="password_confirmation"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setPasswordConfirmation(event.target.value)}
-          required
         />
       </div>
 

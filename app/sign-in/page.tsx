@@ -1,20 +1,18 @@
 'use client'
 import React, { useState } from 'react'
 import axios from 'axios'
-import { Users } from '../interfaces/interfaces'
+import { LoginResponse } from '@/config/interfaces'
+import { useRouter } from 'next/navigation'
 
 export default function SignIn() {
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
+    const router = useRouter()
     const [isPasswordVisible, setIsPasswordVisible] = useState(false)
     const [loading, setLoading] = useState(false)
     function togglePasswordVisibility() {
         setIsPasswordVisible((prevState) => !prevState);
     }
-    const [token, setToken] = React.useState('')
-    const [user, setUser] = React.useState<Users>({} as Users)
-    const [popupMessage, setPopupMessage] = useState('')
-    const [showPopup, setShowPopup] = useState(false)
 
     const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
@@ -37,38 +35,31 @@ export default function SignIn() {
         event.preventDefault()
         if(isValid()) {
             try {
-                const response = await axios.post('http://localhost:3000/auth/login', {
-                email,
-                password
-                })
-                if(response.data !== ''){
-                    const {token, user} = response.data;
-                    setToken(token);
-                    setUser(user);
+                const ENDPOINT = 'http://localhost:3000/auth/login'
+                const data = {
+                    email: email,
+                    password: password
+                }
+                const response = await axios.post(ENDPOINT, data)
+                const dataResponse: LoginResponse = response.data
+                if(dataResponse.user !== undefined){
+                    const { token } = dataResponse
                     localStorage.setItem('token', token);
                     alert('Acceso correcto')
-                    if(!(typeof window === undefined)) { window.history.pushState(null, '', '/menu'); window.location.reload(); }
+                    router.push('/menu')
                 } else {
-                    alert('Usuario o contraseña incorrectos')
+                    alert('Acceso incorrecto')
                 }
             } catch (e:unknown) {
-                console.log(e)
-                alert('Error 500: Internal Server Error')
+                alert(e)
             }
         }
-
-        // if (!user){
-        //     setPopupMessage('Denegado');
-        // } else {
-        //     setPopupMessage('Aceptado')
-        // }
-
-        // setShowPopup(true);
-        
     }
 
     return (
 <div className=" bg-gradient-radial from-color3 via-color2 to-color1 h-screen w-screen flex items-center justify-center">
+    <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
+        onClick={event => window.location.href = "/"}/>
     <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4 rounded-sm shadow-xl">
     <div className="mx-auto max-w-lg text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Inicia sesión</h1>
@@ -226,8 +217,4 @@ export default function SignIn() {
     </div>
 </div>
     )
-}
-
-function setPopupMessage(arg0: string) {
-    throw new Error('Function not implemented.')
 }

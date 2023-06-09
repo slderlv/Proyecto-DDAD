@@ -1,58 +1,64 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { User_Information, Users } from '../interfaces/interfaces'
+import { UserProfile } from '@/config/interfaces'
 
 export default function Profile() {
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const handleButtonClick = () => {
-        if(fileInputRef.current) fileInputRef.current.click();
-    };
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        // Aquí puedes realizar las acciones que desees con el archivo seleccionado
-        console.log(file);
-    };
-  
-    const user_info: User_Information = {
-        birthdate: new Date("1990-01-01"),
-        first_name: "John",
-        last_name: "Frusciante"
-    }
-    const user1: Users = {
-        id: 1,
-        email: "algo@algo.com",
-        city: "coquimbo",
-        password: "123",
-        role: null,
-        createdAt: 0,
-        info: user_info,
-    }
+    const [user, setUser] = useState<UserProfile>({} as UserProfile)
     const [username, setUsername] = React.useState('')
     const [password, setPassword] = React.useState('')
+    const [img, setImg] = React.useState<string|null>(null)
     const [isPasswordVisible, setIsPasswordVisible] = useState(false)
     const [loading, setLoading] = useState(false)
     function togglePasswordVisibility() {
         setIsPasswordVisible((prevState) => !prevState);
     }
-    const [error, setError] = React.useState('')
-    const [token, setToken] = React.useState('')
-    const [user, setUser] = React.useState<Users>(user1);
-    const [popupMessage, setPopupMessage] = useState('')
-    const [showPopup, setShowPopup] = useState(false)
+    
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const handleButtonClick = () => {
+        if(fileInputRef.current) fileInputRef.current.click();
+    };
+    const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImg(imageUrl);
+          }
+        console.log(file);
+    };
+  
+    useEffect(() => {
+        const getProfile = async () => {
+            const token = localStorage.getItem('token');
+            if(!token) {
+                window.location.href = '/sign-in';
+            }
+            const ENDPOINT = 'http://localhost:3000/users/profile'
+            const config = {
+                headers: {
+                Authorization: `Bearer ${token}`
+                }
+            }
+            const response = await axios.get(ENDPOINT, config)
+            const dataResponse: UserProfile = response.data
+            setUser(dataResponse)
+        }
+        getProfile()
+    }, []) /* puede que esta wea se lo pitee [] */
 
     const isValid = ():boolean => {
         switch (true) {
             case username.trim().length === 0:
-                setError('Ingrese un apodo válido')
+                alert('Ingrese un apodo válido')
                 return false;
             case password.trim().length === 0:
-                setError('Ingrese una contraseña')
+                alert('Ingrese una contraseña')
                 return false;
         }
         return true;
     }
-    const handleProfileChange = async () => {
+    const handleProfileChange = async (event: any) => {
+        event.preventDefault()
         if(isValid()) {
             try {
                 const response = await axios.post('http://localhost:3000/auth/login', {
@@ -60,25 +66,16 @@ export default function Profile() {
                     password
                 })
                 console.log(username, password)
-                const {token, user} = response.data;
-                setToken(token);
-                setUser(user);
-                localStorage.setItem('token', token);
-                console.log(token, user)
-                alert('Acceso correcto')
-                if(!(typeof window === undefined)) { window.history.pushState(null, '', '/menu'); window.location.reload(); }
             } catch (e:unknown) {
-                console.log(e)
-                alert('Error 500: Internal Server Error')
+                alert(e)
             }
-        } else {
-            alert(error)
         }
     }
 
     return (
-<div className="bg-black h-screen w-screen flex items-center justify-center">
-    <div className="flex mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4"
+<div className="bg-black h-screen w-screen flex items-center justify-center"
+    style={{backgroundImage: 'url(/purple-background4.jpg)', backgroundRepeat: "no-repeat", backgroundSize:"cover"}}>
+    <div className="flex mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color2 to-color1 shadow-lg"
     style={{height: "40rem", width: "70rem"}}>
         <div className="flex flex-col mx-auto w-1/4 items-center justify-center">
             <img src="metalpipe.jpg" alt="Descripción de la imagen" className="rounded-full w-52 h-52 max-w-full max-h-full mb-5"/>
@@ -88,7 +85,7 @@ export default function Profile() {
                     accept=".jpg"
                     ref={fileInputRef}
                     style={{ display: 'none' }}
-                    onChange={handleFileChange}
+                    onChange={handleImgChange}
                 />
                 <button className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2" 
                 onClick={handleButtonClick}>Seleccionar imagen</button>
@@ -97,11 +94,6 @@ export default function Profile() {
 
         <form action="" className="w-3/4 mx-4 my-10 px-20 space-y-4 backdrop-blur-lg p-10 rounded-md bg-white bg-opacity-5">
         <div>
-            <div>
-                <h1 className="text-2xl font-bold sm:text-3xl mb-2">{user.info.first_name}&nbsp;{user.info.last_name}</h1>
-                <label htmlFor="email" className="text-xl font-semibold sm:text-xl">Email</label>
-                <h2 className="text-xl font-semibold sm:text-xl">{user.email}</h2>
-            </div>
             <label htmlFor="username" className="sr-only">Apodo</label>
 
             <div className="relative">
@@ -115,7 +107,6 @@ export default function Profile() {
                         placeholder="Apodo"
                         className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
                         onChange={event => setUsername(event.target.value)}
-                        required
                     />
 
                     <span
@@ -157,7 +148,6 @@ export default function Profile() {
                     placeholder="Contraseña"
                     className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
                     onChange={event => setPassword(event.target.value)}
-                    required
                 />
 
                 <span
