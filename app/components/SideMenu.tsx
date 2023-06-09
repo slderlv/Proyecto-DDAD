@@ -10,7 +10,7 @@ export function SideMenu(userProfile: UserProfile) {
     try {
       const ENDPOINT = 'http://localhost:3000/token/close'
       const data = {
-          jwt: localStorage.getItem('token')
+          jwt: localStorage.getItem('token')?.split('')[1]
       }
       const response = await axios.post(ENDPOINT, data)
       if(response){

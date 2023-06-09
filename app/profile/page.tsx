@@ -67,11 +67,19 @@ export default function Profile() {
         event.preventDefault()
         if(isValid()) {
             try {
+                const token = localStorage.getItem('token');
                 const ENDPOINT = 'http://localhost:3000/users/edit'
                 const data = {
                     nickname: username,
+                    password: password
                 }
-                const response = await axios.patch(ENDPOINT, data)
+                const config = {
+                    headers: {
+                    Authorization: `Bearer ${token}`
+                    }
+                }
+
+                const response = await axios.patch(ENDPOINT, data, config)
                 console.log(response)
                 if(response){
                     alert('Perfil actualizado correctamente')
