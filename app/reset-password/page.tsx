@@ -26,8 +26,13 @@ export default function SignIn() {
             const data = {
                 email: email,
             }
-            /* AQUI SE CAE */
+            /* AQUI NO SE CAE */
             const response = await axios.post(ENDPOINT, data)
+            if(response){
+                alert('Contraseña enviada correctamente');
+            }else{
+                alert('Error al enviar contraseña')
+            }
             console.log(response.data)
         } catch (e:unknown) {
             alert(e)

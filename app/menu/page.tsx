@@ -87,35 +87,45 @@ export default function Menu() {
         }
       }
       /* LA WEA NO FUNCIONA */
-      const response = await axios.get(ENDPOINT, config)
-      type Response = [
-        string,
-        string,
-        string,
-        {
-          id: number,
-          first_name: string,
-          last_name: string,
-          nickname: string | null,
-          profile_image: string | null,
-        }
-      ]
-      const dataResponse: Response = response.data
-      const dataUser: UserProfile = {
-        email: dataResponse[0],
-        city: dataResponse[1],
-        role: dataResponse[2],
-        userInformationId: {
-          id: dataResponse[3].id,
-          first_name: dataResponse[3].first_name,
-          last_name: dataResponse[3].last_name,
-          nickname: dataResponse[3].nickname,
-          profile_image: dataResponse[3].profile_image,
-        }
+      try {
+
+        const response = await axios.get(ENDPOINT, config)
         
+        type Response = [
+          string,
+          string,
+          string,
+          {
+            id: number,
+            first_name: string,
+            last_name: string,
+            nickname: string | null,
+            profile_image: string | null,
+          }
+        ]
+        const dataResponse: Response = response.data
+        const dataUser: UserProfile = {
+          email: dataResponse[0],
+          city: dataResponse[1],
+          role: dataResponse[2],
+          userInformationId: {
+            id: dataResponse[3].id,
+            first_name: dataResponse[3].first_name,
+            last_name: dataResponse[3].last_name,
+            nickname: dataResponse[3].nickname,
+            profile_image: dataResponse[3].profile_image,
+          }
+          
+        }
+        console.log(response)
+        setUser(dataUser)
+      } catch(e:any){
+        window.location.href = '/sign-in'
       }
-      console.log(response)
-      setUser(dataUser)
+      
+      
+      
+
     }
     getProfile()
   }, [])

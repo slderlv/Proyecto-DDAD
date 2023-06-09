@@ -34,21 +34,22 @@ export default function Profile() {
             if(!token) {
                 window.location.href = '/sign-in';
             }
-            /* A PARTIR DE AQUI */
             const ENDPOINT = 'http://localhost:3000/users/profile'
             const config = {
                 headers: {
                 Authorization: `Bearer ${token}`
                 }
             }
-            /* ESTA WEA NO FUNCIONA */
             const response = await axios.get(ENDPOINT, config)
             const dataResponse: UserProfile = response.data
             setUser(dataResponse)
+            // console.log(response.data[3].nickname)
+            if (response.data[3].nickname)
+            setUsername(response.data[3].nickname);
+            // console.log(dataResponse.userInformationId);
+            
         }
-        if(user.userInformationId?.nickname){
-            setUsername(user.userInformationId.nickname)
-        }
+        // setUsername(response.data.user.userInformationId.nickname)
         getProfile()
     }, [])
 
@@ -96,7 +97,7 @@ export default function Profile() {
 <div className="bg-black h-screen w-screen flex items-center justify-center"
     style={{backgroundImage: 'url(/purple-background4.jpg)', backgroundRepeat: "no-repeat", backgroundSize:"cover"}}>
     <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
-        onClick={event => window.location.href = "/"}/>
+        onClick={event => window.location.href = "/menu"}/>
     <div className="flex mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color2 to-color1 shadow-lg"
     style={{height: "40rem", width: "70rem"}}>
         <div className="flex flex-col mx-auto w-1/4 items-center justify-center">
