@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 export default function SignUp() {
   const [firstName, setFirstName] = React.useState('')
   const [lastName, setLastName] = React.useState('')
-  const [nickname, setNickname] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [city, setCity] = React.useState('')
   const [password, setPassword] = React.useState('')
@@ -22,9 +21,6 @@ export default function SignUp() {
         return false
       case lastName.trim().length === 0:
         alert('Ingrese un apellido')
-        return false
-      case nickname.trim().length === 0:
-        alert('Ingrese un nombre de usuario')
         return false
       case email.trim().length === 0:
         alert('Ingrese un correo electrónico')
@@ -51,15 +47,13 @@ export default function SignUp() {
     event.preventDefault()
     if(isValid()) {
       try {
-        const ENDPOINT = 'http://localhost:3000/users'
+        const ENDPOINT = 'http://localhost:3000/users/register'
         const data = {
-          firstName: firstName,
-          lastName: lastName,
-          nickname: nickname,
+          first_name: firstName,
+          last_name: lastName,
           email: email,
           city: city,
           password: password,
-          passwordConfirmation: passwordConfirmation
         }
         const response = await axios.post(ENDPOINT, data)
         alert('Usuario creado correctamente')
@@ -136,23 +130,6 @@ export default function SignUp() {
           name="last_name"
           className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
           onChange={event => setLastName(event.target.value)}
-        />
-      </div>
-
-      <div className="col-span-6 sm:col-span-3">
-        <label
-          htmlFor="NickName"
-          className="block text-base font-medium text-gray-700"
-        >
-          Nombre de usuario
-        </label>
-
-        <input
-          type="text"
-          id="NickName"
-          name="nick_name"
-          className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
-          onChange={event => setNickname(event.target.value)}
         />
       </div>
 

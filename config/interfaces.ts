@@ -10,12 +10,11 @@ export interface UserProfile {
     email: string,
     city: string,
     role: string | null,
-    userInformationId: UserInformation | null
-}
-export interface UserInformation {
-    id: number,
-    first_name: string,
-    last_name: string,
-    nickname: string,
-    profile_image: string | null
+    userInformationId: {
+        id: number,
+        first_name: string,
+        last_name: string,
+        nickname: string | null,
+        profile_image: string | null
+    } | null
 }

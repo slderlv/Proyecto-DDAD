@@ -81,24 +81,41 @@ export default function Menu() {
       }
       /* A PARTIR DE AQUI */
       const ENDPOINT = 'http://localhost:3000/users/profile'
-      const ENDPOINT2 = 'http://localhost:3000/users'
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         }
       }
       /* LA WEA NO FUNCIONA */
-      const response = await axios.get(ENDPOINT2, config)
-      console.log(response.data)
-      /* const dataResponse: string[] = response.data
+      const response = await axios.get(ENDPOINT, config)
+      type Response = [
+        string,
+        string,
+        string,
+        {
+          id: number,
+          first_name: string,
+          last_name: string,
+          nickname: string | null,
+          profile_image: string | null,
+        }
+      ]
+      const dataResponse: Response = response.data
       const dataUser: UserProfile = {
         email: dataResponse[0],
         city: dataResponse[1],
         role: dataResponse[2],
-        userInformationId: null,
+        userInformationId: {
+          id: dataResponse[3].id,
+          first_name: dataResponse[3].first_name,
+          last_name: dataResponse[3].last_name,
+          nickname: dataResponse[3].nickname,
+          profile_image: dataResponse[3].profile_image,
+        }
+        
       }
       console.log(dataUser)
-      setUser(dataUser) */
+      setUser(dataUser)
     }
     getProfile()
   }, [])
