@@ -78,12 +78,14 @@ export default function Menu() {
       if(!token) {
         window.location.href = '/sign-in';
       }
+      /* A PARTIR DE AQUI */
       const ENDPOINT = 'http://localhost:3000/users/profile'
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         }
       }
+      /* LA WEA NO FUNCIONA */
       const response = await axios.get(ENDPOINT, config)
       const dataResponse: UserProfile = response.data
       setUser(dataResponse)

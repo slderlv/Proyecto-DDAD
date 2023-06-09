@@ -26,6 +26,7 @@ export default function SignIn() {
             const data = {
                 email: email,
             }
+            /* AQUI SE CAE */
             const response = await axios.post(ENDPOINT, data)
             console.log(response.data)
         } catch (e:unknown) {

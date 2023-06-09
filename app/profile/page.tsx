@@ -21,7 +21,8 @@ export default function Profile() {
     const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
+            const imageUrl = URL.createObjectURL(file);/* ESTO RETORNA UN BLOB:LOCALHOST:3000...ETC NO SE QUE WEA HACE */
+            alert(imageUrl)
             setImg(imageUrl);
           }
         console.log(file);
@@ -33,12 +34,14 @@ export default function Profile() {
             if(!token) {
                 window.location.href = '/sign-in';
             }
+            /* A PARTIR DE AQUI */
             const ENDPOINT = 'http://localhost:3000/users/profile'
             const config = {
                 headers: {
                 Authorization: `Bearer ${token}`
                 }
             }
+            /* ESTA WEA NO FUNCIONA */
             const response = await axios.get(ENDPOINT, config)
             const dataResponse: UserProfile = response.data
             setUser(dataResponse)
@@ -61,10 +64,12 @@ export default function Profile() {
         event.preventDefault()
         if(isValid()) {
             try {
-                const response = await axios.post('http://localhost:3000/auth/login', {
+                const response = await axios.patch('http://localhost:3000/users/edit', {
                     username,
-                    password
+                    password,
+                    img
                 })
+                /* AQUI HACER PATCH */
                 console.log(username, password)
             } catch (e:unknown) {
                 alert(e)
@@ -75,10 +80,12 @@ export default function Profile() {
     return (
 <div className="bg-black h-screen w-screen flex items-center justify-center"
     style={{backgroundImage: 'url(/purple-background4.jpg)', backgroundRepeat: "no-repeat", backgroundSize:"cover"}}>
+    <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
+        onClick={event => window.location.href = "/"}/>
     <div className="flex mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color2 to-color1 shadow-lg"
     style={{height: "40rem", width: "70rem"}}>
         <div className="flex flex-col mx-auto w-1/4 items-center justify-center">
-            <img src="metalpipe.jpg" alt="Descripción de la imagen" className="rounded-full w-52 h-52 max-w-full max-h-full mb-5"/>
+            <img /* src={img} AQUI LA RUTA DE LA FOTO YA PUESTA */ alt="Descripción de la imagen" className="rounded-full w-52 h-52 max-w-full max-h-full mb-5"/>
             <div>
                 <input
                     type="file"
@@ -92,7 +99,7 @@ export default function Profile() {
             </div>
         </div>
 
-        <form action="" className="w-3/4 mx-4 my-10 px-20 space-y-4 backdrop-blur-lg p-10 rounded-md bg-white bg-opacity-5">
+        <form action="" className="w-3/4 mx-4 my-10 px-20 space-y-4 backdrop-blur-lg p-2 rounded-md bg-white bg-opacity-5 flex flex-col justify-center">
         <div>
             <label htmlFor="username" className="sr-only">Apodo</label>
 
