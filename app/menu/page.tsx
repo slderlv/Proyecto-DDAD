@@ -114,7 +114,7 @@ export default function Menu() {
         }
         
       }
-      console.log(dataUser)
+      console.log(response)
       setUser(dataUser)
     }
     getProfile()
