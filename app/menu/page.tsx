@@ -12,6 +12,7 @@ interface Product{
 }
 
 export default function Menu() {
+  
   const [user, setUser] = useState<UserProfile>({} as UserProfile)
   const [reservation, setReservation] = useState<Product[]>([])
   const [searchValue, setSearchValue] = useState('')
@@ -80,18 +81,27 @@ export default function Menu() {
       }
       /* A PARTIR DE AQUI */
       const ENDPOINT = 'http://localhost:3000/users/profile'
+      const ENDPOINT2 = 'http://localhost:3000/users'
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         }
       }
       /* LA WEA NO FUNCIONA */
-      const response = await axios.get(ENDPOINT, config)
-      const dataResponse: UserProfile = response.data
-      setUser(dataResponse)
+      const response = await axios.get(ENDPOINT2, config)
+      console.log(response.data)
+      /* const dataResponse: string[] = response.data
+      const dataUser: UserProfile = {
+        email: dataResponse[0],
+        city: dataResponse[1],
+        role: dataResponse[2],
+        userInformationId: null,
+      }
+      console.log(dataUser)
+      setUser(dataUser) */
     }
     getProfile()
-  }, []) /* puede que esta wea se lo pitee [] */
+  }, [])
   
     return(
 <div className="flex">

@@ -47,7 +47,7 @@ export default function Profile() {
             setUser(dataResponse)
         }
         getProfile()
-    }, []) /* puede que esta wea se lo pitee [] */
+    }, [])
 
     const isValid = ():boolean => {
         switch (true) {
@@ -85,7 +85,7 @@ export default function Profile() {
     <div className="flex mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color2 to-color1 shadow-lg"
     style={{height: "40rem", width: "70rem"}}>
         <div className="flex flex-col mx-auto w-1/4 items-center justify-center">
-            <img /* src={img} AQUI LA RUTA DE LA FOTO YA PUESTA */ alt="Descripción de la imagen" className="rounded-full w-52 h-52 max-w-full max-h-full mb-5"/>
+            <img src={user.userInformationId && user.userInformationId.profile_image ? user.userInformationId.profile_image : 'metalpipe.jpg'} alt="Descripción de la imagen" className="rounded-full w-52 h-52 max-w-full max-h-full mb-5"/>
             <div>
                 <input
                     type="file"

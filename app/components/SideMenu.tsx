@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserProfile } from "@/config/interfaces";
 
 export function SideMenu(userProfile: UserProfile) {
-  const [ user ] = useState<UserProfile>(userProfile)
+  
   return(
 <div className="flex h-screen flex-col justify-between border-e bg-gradient-to-b from-color1 via-color2 to-color3">
   <div className="px-4 py-6">
@@ -95,11 +95,11 @@ export function SideMenu(userProfile: UserProfile) {
             <span className="text-sm font-medium"> Seguridad </span>
           </a>
 
-          <form action="/sign-in">
+          <form action="#">
             <button
               type="submit"
               className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-              onClick={event => {}} /* -------------------- AQUI CERRAR SESION -------------------- */
+              onClick={event => alert(userProfile.email)} /* -------------------- AQUI CERRAR SESION -------------------- */
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -128,14 +128,14 @@ export function SideMenu(userProfile: UserProfile) {
     <a href="/profile" className="flex items-center gap-2 bg-color3 p-4 hover:bg-gray-50">
       <img
         alt="profilePicture"
-        src="ruta de la foto aqui" /* ----------------------- AQUI FALTA LA RUTA DE LA FOTO ------------------------------ */
+        src={userProfile.userInformationId && userProfile.userInformationId.profile_image ? userProfile.userInformationId.profile_image : 'metalpipe.jpg'}
         className="h-10 w-10 rounded-full object-cover"
       />
 
       <div>
         <p className="text-xs">
-          <strong className="block font-medium"> {/* {user?.information.firstName}&nbsp;{user?.information.lastName} */} </strong>
-          <span className="text-black"> {user?.email} </span>
+          <strong className="block font-medium"> {userProfile.userInformationId && userProfile.userInformationId.first_name}&nbsp;{userProfile.userInformationId && userProfile.userInformationId.last_name} </strong>
+          <span className="text-black font-bold text-lg"> {userProfile.email} </span>
         </p>
       </div>
     </a>
