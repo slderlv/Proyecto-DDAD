@@ -5,7 +5,7 @@ import { UserProfile } from '@/config/interfaces'
 
 export default function Profile() {
     const [user, setUser] = useState<UserProfile>({} as UserProfile)
-    const [username, setUsername] = React.useState('')
+    const [username, setUsername] = React.useState<string>('')
     const [password, setPassword] = React.useState('')
     const [img, setImg] = React.useState<string|null>(null)
     const [isPasswordVisible, setIsPasswordVisible] = useState(false)
@@ -46,6 +46,9 @@ export default function Profile() {
             const dataResponse: UserProfile = response.data
             setUser(dataResponse)
         }
+        if(user.userInformationId?.nickname){
+            setUsername(user.userInformationId.nickname)
+        }
         getProfile()
     }, [])
 
@@ -64,13 +67,17 @@ export default function Profile() {
         event.preventDefault()
         if(isValid()) {
             try {
-                const response = await axios.patch('http://localhost:3000/users/edit', {
-                    username,
-                    password,
-                    img
-                })
-                /* AQUI HACER PATCH */
-                console.log(username, password)
+                const ENDPOINT = 'http://localhost:3000/users/edit'
+                const data = {
+                    nickname: username,
+                }
+                const response = await axios.patch(ENDPOINT, data)
+                console.log(response)
+                if(response){
+                    alert('Perfil actualizado correctamente')
+                } else {
+                    alert('Error al actualizar el perfil')
+                }
             } catch (e:unknown) {
                 alert(e)
             }
@@ -113,7 +120,9 @@ export default function Profile() {
                         id="Username"
                         placeholder="Apodo"
                         className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+                        
                         onChange={event => setUsername(event.target.value)}
+                        value={username}
                     />
 
                     <span

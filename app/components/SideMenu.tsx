@@ -1,8 +1,29 @@
 import { useEffect, useState } from "react";
 import { UserProfile } from "@/config/interfaces";
+import axios from "axios";
+import { useRouter } from 'next/navigation'
 
 export function SideMenu(userProfile: UserProfile) {
-  
+  const router = useRouter()
+  const handleLogOut = async (event: any) => {
+    event.preventDefault()
+    try {
+      const ENDPOINT = 'http://localhost:3000/token/close'
+      const data = {
+          jwt: localStorage.getItem('token')
+      }
+      const response = await axios.post(ENDPOINT, data)
+      if(response){
+          alert('Sesión cerrada correctamente')
+          router.push('/sign-in')
+      } else {
+          alert('Error al cerrar sesión')
+      }
+  } catch (e:unknown) {
+      alert(e)
+  }
+}
+
   return(
 <div className="flex h-screen flex-col justify-between border-e bg-gradient-to-b from-color1 via-color2 to-color3">
   <div className="px-4 py-6">
@@ -99,7 +120,7 @@ export function SideMenu(userProfile: UserProfile) {
             <button
               type="submit"
               className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-              onClick={event => alert(userProfile.email)} /* -------------------- AQUI CERRAR SESION -------------------- */
+              onClick={handleLogOut} /* -------------------- AQUI CERRAR SESION -------------------- */
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
