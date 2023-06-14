@@ -46,7 +46,9 @@ export default function SignUp() {
   const handleSignUp = async (event: any) => {
     event.preventDefault()
     if(isValid()) {
+      setLoading(true)
       try {
+        
         const ENDPOINT = 'http://localhost:3000/users/register'
         const data = {
           first_name: firstName,
@@ -56,9 +58,13 @@ export default function SignUp() {
           password: password,
         }
         const response = await axios.post(ENDPOINT, data)
-        alert('Usuario creado correctamente')
-        router.push('/sign-in')
+        if(response){
+          alert('Usuario creado correctamente')
+          router.push('/sign-in')
+        }
+        setLoading(false)
       } catch (e: unknown) {
+        setLoading(false)
         alert(e)
         return [];
       }
@@ -202,16 +208,16 @@ export default function SignUp() {
         />
       </div>
 
-      <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
+      <div className="col-span-6 sm:flex sm:items-center sm:gap-4 ">
         <button
           id='loadbutton'
-          className="inline-block w-55 justify-center items-center rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+          className="inline-block w-1/2 rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
           onClick={handleSignUp}
         >{!loading ? (
           'Crea una cuenta'
         ) : (
           <>
-            <span className='mx-3 border-spacing-1'>Cargando&nbsp;</span>
+            Cargando&nbsp;
             <i id="button-i" className='fa fa-spinner fa-spin'></i>
           </>
         )}

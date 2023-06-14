@@ -1,14 +1,12 @@
 'use client'
 import React from 'react'
 import axios from 'axios'
-import { Users } from '../interfaces/interfaces'
+import { useRouter } from 'next/navigation'
 
 export default function SignIn() {
   const [email, setEmail] = React.useState('')
-  const [token, setToken] = React.useState('')
-  const [user, setUser] = React.useState<Users>({} as Users);
-  const [popupMessage, setPopupMessage] = React.useState('');
-  const [showPopup, setShowPopup] = React.useState(false);
+  const [loading, setLoading] = React.useState<boolean>(false)
+  const router = useRouter()
   const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
   const isValid = ():boolean => {
@@ -21,15 +19,17 @@ export default function SignIn() {
   const handleResetPassword = async (event: any) => {
     event.preventDefault()
     if(isValid()) {
+        setLoading(true)
         try {
             const ENDPOINT = 'http://localhost:3000/forgot'
             const data = {
                 email: email,
             }
-            /* AQUI NO SE CAE */
             const response = await axios.post(ENDPOINT, data)
             if(response){
                 alert('Contraseña enviada correctamente');
+                router.push('/sign-in')
+                
             }else{
                 alert('Error al enviar contraseña')
             }
@@ -103,16 +103,18 @@ export default function SignIn() {
               type="submit"
               className="w-full inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
               onClick={handleResetPassword}
-          >
-              Enviar código
+          >{!loading ? (
+            'Enviar código'
+          ) : (
+            <>
+              Cargando&nbsp;
+              <i id="button-i" className='fa fa-spinner fa-spin'></i>
+            </>
+          )}
           </button>
         </div>
     </form>
     </div>
 </div>
     )
-}
-
-function setPopupMessage(arg0: string) {
-    throw new Error('Function not implemented.')
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { SideMenu } from "../components/SideMenu"
 import axios from "axios"
 import { UserProfile } from "@/config/interfaces"
+import { useRouter } from "next/navigation"
 
 interface Product{
   id: number,
@@ -16,6 +17,7 @@ export default function Menu() {
   const [user, setUser] = useState<UserProfile>({} as UserProfile)
   const [reservation, setReservation] = useState<Product[]>([])
   const [searchValue, setSearchValue] = useState('')
+  const router = useRouter()
   const searchByTitle = (title: string): Product[] => {
     if (title === '') {
       return list;
@@ -77,7 +79,7 @@ export default function Menu() {
     const getProfile = async () => {
       const token = localStorage.getItem('token');
       if(!token) {
-        window.location.href = '/sign-in';
+        router.push('/sign-in')
       }
       /* A PARTIR DE AQUI */
       const ENDPOINT = 'http://localhost:3000/users/profile'

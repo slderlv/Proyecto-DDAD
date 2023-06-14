@@ -2,19 +2,18 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { UserProfile } from '@/config/interfaces'
+import { useRouter } from 'next/navigation'
 
 export default function Profile() {
     const [user, setUser] = useState<UserProfile>({} as UserProfile)
-    const [username, setUsername] = React.useState<string>('')
-    const [password, setPassword] = React.useState('')
-    const [img, setImg] = React.useState<string|null>(null)
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+    const [firstName, setFirstName] = useState<string>('')
+    const [lastName, setLastName] = useState<string>('')
+    const [city, setCity] = useState<string>('')
+    const [username, setUsername] = useState<string>('')
+    const [img, setImg] = useState<string|null>(null)
     const [loading, setLoading] = useState(false)
-    function togglePasswordVisibility() {
-        setIsPasswordVisible((prevState) => !prevState);
-    }
-    
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const router = useRouter()
     const handleButtonClick = () => {
         if(fileInputRef.current) fileInputRef.current.click();
     };
@@ -32,7 +31,7 @@ export default function Profile() {
         const getProfile = async () => {
             const token = localStorage.getItem('token');
             if(!token) {
-                window.location.href = '/sign-in';
+                router.push('/sign-in')
             }
             const ENDPOINT = 'http://localhost:3000/users/profile'
             const config = {
@@ -41,15 +40,29 @@ export default function Profile() {
                 }
             }
             const response = await axios.get(ENDPOINT, config)
-            const dataResponse: UserProfile = response.data
-            setUser(dataResponse)
-            // console.log(response.data[3].nickname)
-            if (response.data[3].nickname)
-            setUsername(response.data[3].nickname);
-            // console.log(dataResponse.userInformationId);
-            
+            /* const dataResponse: UserProfile = response.data */
+            if (response.data){
+                const userProfile: UserProfile = {
+                email: response.data[0],
+                city: response.data[1],
+                role: response.data[2],
+                userInformationId: {
+                    id: response.data[3].id,
+                    first_name: response.data[3].first_name,
+                    last_name: response.data[3].last_name,
+                    nickname: response.data[3].nickname,
+                    profile_image: response.data[3].profile_image
+                    }
+                }
+                setUser(userProfile)
+                setFirstName(userProfile.userInformationId!.first_name)
+                setLastName(userProfile.userInformationId!.last_name)
+                if(userProfile.userInformationId!.nickname){
+                    setUsername(userProfile.userInformationId!.nickname)
+                }
+                setCity(userProfile.city)
+            }
         }
-        // setUsername(response.data.user.userInformationId.nickname)
         getProfile()
     }, [])
 
@@ -58,8 +71,11 @@ export default function Profile() {
             case username.trim().length === 0:
                 alert('Ingrese un apodo válido')
                 return false;
-            case password.trim().length === 0:
-                alert('Ingrese una contraseña')
+            case firstName.trim().length === 0:
+                alert('Ingrese un nombre válido')
+                return false;
+            case lastName.trim().length === 0:
+                alert('Ingrese un apellido válido')
                 return false;
         }
         return true;
@@ -72,7 +88,9 @@ export default function Profile() {
                 const ENDPOINT = 'http://localhost:3000/users/edit'
                 const data = {
                     nickname: username,
-                    password: password
+                    first_name: firstName,
+                    last_name: lastName,
+                    city: city
                 }
                 const config = {
                     headers: {
@@ -115,135 +133,98 @@ export default function Profile() {
             </div>
         </div>
 
-        <form action="" className="w-3/4 mx-4 my-10 px-20 space-y-4 backdrop-blur-lg p-2 rounded-md bg-white bg-opacity-5 flex flex-col justify-center">
-        <div>
-            <label htmlFor="username" className="sr-only">Apodo</label>
-
-            <div className="relative">
-                <label
-                    htmlFor="Username"
-                    className="bg-white relative block overflow-hidden rounded-md border border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                    >
-                    <input
-                        type="text"
-                        id="Username"
-                        placeholder="Apodo"
-                        className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
-                        
-                        onChange={event => setUsername(event.target.value)}
-                        value={username}
-                    />
-
-                    <span
-                        className="absolute start-3 top-3 -translate-y-1/2 text-xs text-black transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
-                    >
-                        Apodo
-                    </span>
-                    <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 text-gray-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                            />
-                        </svg>
-                    </span>
-                </label>
-            </div>
-        </div>
-
-        <div>
-        <label htmlFor="password" className="sr-only">Contraseña</label>
-
-        <div className="relative">
+        <div className="flex flex-col justify-center w-3/4 mx-4 my-10 px-20 backdrop-blur-lg p-2 rounded-md bg-white bg-opacity-5">
+        <form className="space-y-3">
+            <div className="col-span-6 sm:col-span-3">
             <label
-                htmlFor="UserPassword"
-                className="bg-white relative block overflow-hidden rounded-md border border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                <input
-                    type={isPasswordVisible ? "text" : "password"}
-                    id="UserPassword"
-                    placeholder="Contraseña"
-                    className="w-full rounded-lg border-gray-200 p-4 pe-12 text-base shadow-sm peer h-8 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
-                    onChange={event => setPassword(event.target.value)}
-                />
-
-                <span
-                    className="absolute start-3 top-3 -translate-y-1/2 text-xs text-black transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
-                >
-                    Contraseña
-                </span>
-            </label>
-            <button
-                className="absolute inset-y-0 right-0 flex items-center px-4 text-black"
-                onClick={togglePasswordVisibility}
+                htmlFor="FirstName"
+                className="block text-base font-medium text-gray-100"
             >
-                {isPasswordVisible ? (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                    />
-                </svg>
-                ) : (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                    />
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                </svg>
-                )}
-            </button>
-        </div>
-        </div>
+                Nombre
+            </label>
 
-        <div className="flex items-center justify-between">
-            
-            <div className="flex items-center justify-between">
-                <button
-                    type="submit"
-                    className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
-                    onClick={handleProfileChange}
-                >{!loading ? (
-                    'Guardar cambios'
-                  ) : (
-                    <>
-                      <span className='mx-3 border-spacing-1'>Cargando&nbsp;</span>
-                      <i id="button-i" className='fa fa-spinner fa-spin'></i>
-                    </>
-                  )}
-                </button>
+            <input
+                type="text"
+                id="FirstName"
+                name="first_name"
+                className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
+                onChange={event => setFirstName(event.target.value)}
+                value={firstName}
+            />
             </div>
-        </div>
-    </form>
+
+            <div className="col-span-6 sm:col-span-3">
+                <label
+                htmlFor="LastName"
+                className="block text-base font-medium text-gray-100"
+                >
+                Apellido
+                </label>
+
+                <input
+                type="text"
+                id="LastName"
+                name="last_name"
+                className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
+                onChange={event => setLastName(event.target.value)}
+                value={lastName}
+                />
+            </div>
+
+            <div className="col-span-6 sm:col-span-3">
+                <label htmlFor="Username" className="block text-base font-medium text-gray-100">
+                Apodo
+                </label>
+
+                <input
+                type="text"
+                id="Username"
+                name="username"
+                className="mt-1 w-full rounded-md border-gray-200 bg-white text-base text-gray-700 shadow-sm p-2"
+                onChange={event => setUsername(event.target.value)}
+                value={username}
+                />
+            </div>
+
+            <div className="col-span-6 sm:col-span-3">
+                <label htmlFor="Cities" className="block text-base font-medium text-gray-100">
+                Ciudad
+                </label>
+
+                <select
+                name="cities"
+                id="Cities"
+                className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-base p-2"
+                onChange={event => setCity(event.target.value)}
+                value={city}
+                >
+                <option value="">Seleccione una opción</option>
+                <option value="coquimbo">Coquimbo</option>
+                <option value="laSerena">La Serena</option>
+                <option value="ovalle">Ovalle</option>
+                <option value="copiapo">Copiapó</option>
+                <option value="antofagasta">Antofagasta</option>
+                <option value="illapel">Illapel</option>
+                <option value="vallenar">Vallenar</option>
+                </select>
+            </div>
+            <div className="flex items-center justify-between">
+            <button
+                type="submit"
+                className="w-full inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
+                onClick={handleProfileChange}
+            >{!loading ? (
+                'Guardar cambios'
+            ) : (
+                <>
+                <span className='mx-3 border-spacing-1'>Cargando&nbsp;</span>
+                <i id="button-i" className='fa fa-spinner fa-spin'></i>
+                </>
+            )}
+            </button>
+            </div>
+        </form>
+    </div>
     </div>
 </div>
     )

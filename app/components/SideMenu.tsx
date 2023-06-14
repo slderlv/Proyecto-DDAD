@@ -95,7 +95,7 @@ export function SideMenu(userProfile: UserProfile) {
           </a>
 
           <a
-            href="#"
+            href="/change-password"
             className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           >
             <svg
@@ -113,7 +113,7 @@ export function SideMenu(userProfile: UserProfile) {
               />
             </svg>
 
-            <span className="text-sm font-medium"> Seguridad </span>
+            <span className="text-sm font-medium"> Cambiar contraseña </span>
           </a>
 
           <form action="#">
