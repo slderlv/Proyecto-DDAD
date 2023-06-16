@@ -44,3 +44,16 @@ export interface Item {
    	    item_name?: string
     }
 }
+export interface Type {
+    id: number,
+    name: string,
+    default_image: string | null,
+    schedules: Schedule[]
+}
+export interface Schedule {
+    day_quantity: number,
+    id: number,
+    name: string,
+    start_time: string,
+    end_time: string
+}
