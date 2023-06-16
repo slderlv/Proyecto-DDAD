@@ -155,7 +155,11 @@ export function SideMenu(userProfile: UserProfile) {
 
       <div>
         <p className="text-xs">
-          <strong className="block font-medium"> {userProfile.userInformationId && userProfile.userInformationId.first_name}&nbsp;{userProfile.userInformationId && userProfile.userInformationId.last_name} </strong>
+          <strong className="block font-medium"> {
+          userProfile.userInformationId && userProfile.userInformationId.nickname
+          ? userProfile.userInformationId.nickname 
+          : userProfile.userInformationId && userProfile.userInformationId.first_name + " " + userProfile.userInformationId.last_name}
+          </strong>
           <span className="text-black"> {userProfile.email} </span>
         </p>
       </div>

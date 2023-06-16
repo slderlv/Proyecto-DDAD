@@ -1,11 +1,11 @@
 'use client'
 import { ItemProvider } from "@/contexts/ItemContext";
-import Menu from "../components/Menu";
+import Item from "../components/Item";
 
-export default function MenuPage(){
+export default function ItemPage(){
   return(
     <ItemProvider>
-      <Menu/>
+      <Item/>
     </ItemProvider>
   )
 }

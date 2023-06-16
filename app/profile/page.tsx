@@ -102,6 +102,7 @@ export default function Profile() {
                 console.log(response)
                 if(response){
                     alert('Perfil actualizado correctamente')
+                    router.push('/menu')
                 } else {
                     alert('Error al actualizar el perfil')
                 }
