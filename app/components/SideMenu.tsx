@@ -120,7 +120,7 @@ export function SideMenu(userProfile: UserProfile) {
             <button
               type="submit"
               className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-              onClick={handleLogOut} /* -------------------- AQUI CERRAR SESION -------------------- */
+              onClick={handleLogOut}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -149,8 +149,8 @@ export function SideMenu(userProfile: UserProfile) {
     <a href="/profile" className="flex items-center gap-2 bg-color3 p-4 hover:bg-gray-50">
       <img
         alt="profilePicture"
-        src={userProfile.userInformationId && userProfile.userInformationId.profile_image ? userProfile.userInformationId.profile_image : 'metalpipe.jpg'}
-        className="h-10 w-10 rounded-full object-cover"
+        src={userProfile.userInformationId && userProfile.userInformationId.profile_image ? userProfile.userInformationId.profile_image : 'default_user.png'}
+        className="h-10 w-10 rounded-full object-cover bg-gray-100"
       />
 
       <div>

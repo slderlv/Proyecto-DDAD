@@ -1,16 +1,18 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { City } from '@/config/interfaces'
 
 export default function SignUp() {
-  const [firstName, setFirstName] = React.useState('')
-  const [lastName, setLastName] = React.useState('')
-  const [email, setEmail] = React.useState('')
-  const [city, setCity] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [passwordConfirmation, setPasswordConfirmation] = React.useState('')
-  const [loading, setLoading] = React.useState<boolean>(false)
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [city, setCity] = useState('')
+  const [cities, setCities] = useState<City[]>([])
+  const [password, setPassword] = useState('')
+  const [passwordConfirmation, setPasswordConfirmation] = useState('')
+  const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter()
   const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
@@ -49,7 +51,7 @@ export default function SignUp() {
       setLoading(true)
       try {
         
-        const ENDPOINT = 'http://localhost:3000/users/register'
+        const ENDPOINT = process.env.MS_USERS + '/users/register'
         const data = {
           first_name: firstName,
           last_name: lastName,
@@ -71,8 +73,21 @@ export default function SignUp() {
     }
     
   }
-    return (
+  useEffect(() => {
+    const getCities = async () => {
+      const ENDPOINT = process.env.MS_CITIES
+      try {
+        const response = await axios.get(ENDPOINT!)
+        const responseCities: City[] = response.data
+        setCities(responseCities)
+      } catch (error: unknown) {
+        console.log(error)
+      }
+    }
+    getCities()
+  },[])
 
+    return (
 <section className="bg-purple">
   <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
     <section
@@ -87,7 +102,7 @@ export default function SignUp() {
         onClick={event => window.location.href = "/"}/>
       <div className="hidden lg:relative lg:block lg:p-12">
         <h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
-          Bienvenido a Metal Pipes Team 
+          Bienvenido a Metal Pipes Team
         </h2>
 
         <p className="mt-4 leading-relaxed text-white/90">
@@ -164,13 +179,11 @@ export default function SignUp() {
           onChange={event => setCity(event.target.value)}
         >
           <option value="">Seleccione una opción</option>
-          <option value="coquimbo">Coquimbo</option>
-          <option value="laSerena">La Serena</option>
-          <option value="ovalle">Ovalle</option>
-          <option value="copiapo">Copiapó</option>
-          <option value="antofagasta">Antofagasta</option>
-          <option value="illapel">Illapel</option>
-          <option value="vallenar">Vallenar</option>
+            {cities.map(city => (
+              <option key={city.city} value={city.city}>
+                {city.city}
+              </option>
+            ))}
         </select>
       </div>
 
@@ -213,6 +226,7 @@ export default function SignUp() {
           id='loadbutton'
           className="inline-block w-1/2 rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
           onClick={handleSignUp}
+          disabled={loading}
         >{!loading ? (
           'Crea una cuenta'
         ) : (

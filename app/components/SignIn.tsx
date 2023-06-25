@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { LoginResponse } from '@/config/interfaces'
 import { useRouter } from 'next/navigation'
+import UserContext from '@/contexts/UserContext'
 
 export default function SignIn() {
     const [email, setEmail] = React.useState('')
@@ -13,7 +14,7 @@ export default function SignIn() {
     function togglePasswordVisibility() {
         setIsPasswordVisible((prevState) => !prevState);
     }
-
+    
     const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
     const isValid = (): boolean => {
@@ -34,6 +35,7 @@ export default function SignIn() {
     const handleSignIn = async (event: any) => {
         event.preventDefault()
         if(isValid()) {
+            setLoading(true)
             try {
                 const ENDPOINT = 'http://localhost:3000/auth/login'
                 const data = {
@@ -50,8 +52,9 @@ export default function SignIn() {
                 } else {
                     alert('Acceso incorrecto')
                 }
-            } catch (e:unknown) {
-                alert(e)
+            } catch (error: unknown) {
+                setLoading(false)
+                alert(error)
             }
         }
     }
@@ -59,7 +62,7 @@ export default function SignIn() {
     return (
 <div className=" bg-gradient-radial from-color3 via-color2 to-color1 h-screen w-screen flex items-center justify-center">
     <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
-        onClick={event => window.location.href = "/"}/>
+        onClick={event => router.push("/")}/>
     <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4 rounded-sm shadow-xl">
     <div className="mx-auto max-w-lg text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Inicia sesión</h1>
@@ -202,11 +205,12 @@ export default function SignIn() {
                     type="submit"
                     className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
                     onClick={handleSignIn}
+                    disabled={loading}
                 >{!loading ? (
                     'Inicia Sesión'
                   ) : (
                     <>
-                      <span className='mx-3 border-spacing-1'>Cargando&nbsp;</span>
+                      Cargando&nbsp;
                       <i id="button-i" className='fa fa-spinner fa-spin'></i>
                     </>
                   )}

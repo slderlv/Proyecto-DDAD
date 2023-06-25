@@ -8,47 +8,55 @@ import { useItemContext } from "@/contexts/ItemContext";
 
 export default function Menu() {
     const [items, setItems] = useState<Item[]>([]);
+    const [itemsDisplay, setItemsDisplay] = useState<Item[]>([]);
     const { selectedItem, setSelectedItem } = useItemContext()!;
     const [user, setUser] = useState<UserProfile>({} as UserProfile);
     const [searchValue, setSearchValue] = useState("");
     const router = useRouter();
+
     useEffect(() => {
     const getItems = async () => {
-        const ENDPOINT = 'http://localhost:3005/items'
+        const ENDPOINT = process.env.MS_RESERVES + '/items'
         const response = await axios.get(ENDPOINT)
-        setItems(response.data)
+        setItems(response.data.items)
+        setItemsDisplay(response.data.items)
     }
     getItems()
     }, [])
-    const getImageType = (item: Item):string => {
-    if (item.name === 'Don Quijote de la Mancha'){
-        return 'donquijote.jpg'
-    }
-    if (item.name === 'Harry Potter y la piedra filosofal'){
-        return 'piedrafilosofal.jpg'
-    }
-    if (item.name === 'Serie Schaum Estadística'){
-        return 'schaum.jpg'
-    }
-    if (item.type.name === 'libro') {
-        return 'book.jpg'
-    }
-    if (item.type.name === 'sala') {
-        return 'sala1.jpg'
-    }
-    return ""
-    }
+    
     const searchByTitle = (title: string): Item[] => {
-    if (title === '') {
-        return items;
+      if (title === '') {
+        return items
+      }
+      const foundProducts = items.filter((item) =>
+        item.name.toLowerCase().includes(title.toLowerCase())
+      )
+      return foundProducts
     }
 
-    const foundProducts = items.filter((item) =>
-        item.name.toLowerCase().includes(title.toLowerCase())
-    );
+    const handleSortByChange = (event: any) => {
+      const filteredItems = setFilter(event.target.value)
+      setItemsDisplay(filteredItems)
+    }
 
-    return foundProducts;
-    };
+    const handleItemSelection = (item: Item) => {
+      setSelectedItem(item)
+      if(selectedItem){
+        localStorage.setItem('selectedItemId', selectedItem.id + "")
+        router.push("/item")
+      }
+    }
+
+    const setFilter = (option: string): Item[] => {
+      switch (true){
+        case (option === 'Title, DESC'):
+          return itemsDisplay.sort((a, b) => b.name.localeCompare(a.name))
+        case (option === 'Title, ASC'):
+          return itemsDisplay.sort((a, b) => a.name.localeCompare(b.name))
+        default:
+          return items
+      }
+    }
 
     useEffect(() => {
     const getProfile = async () => {
@@ -56,7 +64,7 @@ export default function Menu() {
         if(!token) {
         router.push('/sign-in')
         }
-        const ENDPOINT = 'http://localhost:3000/users/profile'
+        const ENDPOINT = process.env.MS_USERS + '/users/profile'
         const config = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -93,20 +101,13 @@ export default function Menu() {
             
         }
         setUser(dataUser)
-        } catch(e:any){
+        localStorage.setItem('clientID', dataUser.userInformationId!.id?.toString())
+        } catch(error: unknown){
         router.push('/sign-in')
         }
     }
     getProfile()
     }, [])
-
-    useEffect(() => {
-        if (selectedItem) {
-          console.log(selectedItem);
-          localStorage.setItem('selectedItem', JSON.stringify(selectedItem));
-          router.push("/item");
-        }
-      }, [selectedItem]);
 
     return(
 <div className="flex">
@@ -150,102 +151,6 @@ export default function Menu() {
       
 
       <div className="hidden sm:flex sm:gap-4">
-        <div className="relative">
-          <details className="group [&_summary::-webkit-details-marker]:hidden">
-            <summary
-              className="flex cursor-pointer items-center gap-2 border-b border-gray-400 pb-1 text-gray-900 transition hover:border-gray-600"
-            >
-              <span className="text-sm font-medium"> Disponibilidad </span>
-
-              <span className="transition group-open:-rotate-180">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-4 w-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                  />
-                </svg>
-              </span>
-            </summary>
-
-            <div
-              className="z-50 group-open:absolute group-open:top-auto group-open:mt-2 ltr:group-open:start-0"
-            >
-              <div className="w-96 rounded border border-gray-200 bg-white">
-                <header className="flex items-center justify-between p-4">
-
-                  <button
-                    type="button"
-                    className="text-sm text-gray-900 underline underline-offset-4"
-                  >
-                    Buscar
-                  </button>
-                </header>
-
-                <ul className="space-y-1 border-t border-gray-200 p-4">
-                  <li>
-                    <label
-                      htmlFor="FilterInStock"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <input
-                        type="checkbox"
-                        id="FilterInStock"
-                        className="h-5 w-5 rounded border-gray-300"
-                      />
-
-                      <span className="text-sm font-medium text-gray-700">
-                        En Stock (5+)
-                      </span>
-                    </label>
-                  </li>
-
-                  <li>
-                    <label
-                      htmlFor="FilterPreOrder"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <input
-                        type="checkbox"
-                        id="FilterPreOrder"
-                        className="h-5 w-5 rounded border-gray-300"
-                      />
-
-                      <span className="text-sm font-medium text-gray-700">
-                        Pre Order (3+)
-                      </span>
-                    </label>
-                  </li>
-
-                  <li>
-                    <label
-                      htmlFor="FilterOutOfStock"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <input
-                        type="checkbox"
-                        id="FilterOutOfStock"
-                        className="h-5 w-5 rounded border-gray-300"
-                      />
-
-                      <span className="text-sm font-medium text-gray-700">
-                        Fuera de Stock (10+)
-                      </span>
-                    </label>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </details>
-        </div>
-
         <div>
           <label htmlFor="FilterInput" className="flex items-center gap-2">
             <input
@@ -261,8 +166,8 @@ export default function Menu() {
               type="button"
               className="text-sm text-gray-900 underline underline-offset-4 mb-3"
               onClick={event => {
-                const searchResults: Item[] = searchByTitle(searchValue);
-                setItems(searchResults);
+                const searchResults: Item[] = searchByTitle(searchValue)
+                setItemsDisplay(searchResults)
               }}
             >
               Buscar
@@ -273,29 +178,22 @@ export default function Menu() {
         <label htmlFor="SortBy" className="sr-only">Ordenar por</label>
 
         <select id="SortBy" className="h-10 rounded border-gray-300 text-sm"
-        /* onChange={(event) => {
-          const selectedValue: keyof typeof optionList = event.target.value as keyof typeof optionList;
-          
-          const list = optionList[selectedValue] || [];
-          setReservation(list);
-        }} */
+        onChange={handleSortByChange}
         >
-          <option>Ordenar por</option>
+          <option value="Default">Sin orden</option>
           <option value="Title, DESC">Título, DESC</option>
           <option value="Title, ASC">Título, ASC</option>
-          <option value="Price, DESC">Precio, DESC</option>
-          <option value="Price, ASC">Precio, ASC</option>
         </select>
       </div>
     </div>
 
     <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {items.map((item) => (
+      {itemsDisplay.map((item) => (
         <li key={item.id}>
           <a className="group block overflow-hidden hover:cursor-pointer"
-          onClick={() => setSelectedItem(item)}>
+          onClick={() => handleItemSelection(item)}>
             <img
-              src={getImageType(item)}
+              src={item.id+".jpg"}
               alt=""
               className="h-[350px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[450px]"
             />

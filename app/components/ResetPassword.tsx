@@ -103,6 +103,7 @@ export default function SignIn() {
               type="submit"
               className="w-full inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
               onClick={handleResetPassword}
+              disabled={loading}
           >{!loading ? (
             'Enviar código'
           ) : (
