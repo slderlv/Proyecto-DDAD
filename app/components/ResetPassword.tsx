@@ -3,6 +3,8 @@ import React from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 
+import { Toaster, toast } from 'react-hot-toast'
+
 export default function ResetPassword() {
   const [email, setEmail] = React.useState('')
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -25,17 +27,36 @@ export default function ResetPassword() {
             const data = {
                 email: email,
             }
-            const response = await axios.post(ENDPOINT, data)
-            if(response){
-                alert('Contraseña enviada correctamente');
-                router.push('/sign-in')
-                
-            }else{
-                alert('Error al enviar contraseña')
+            const handlePost = async () => {
+                try {
+                    const response = await toast.promise(axios.post(ENDPOINT, data), {
+                        loading: "Enviando contraseña...",
+                        success: () => {
+                            router.push('/sign-in')
+                            return "Contraseña enviada con exito"
+                        },
+                        error: () => {
+                            setLoading(false);
+                            return "Error con el envio"
+                        }
+                    })
+                } catch (err) {
+                    console.error(err);
+                }
             }
-            console.log(response.data)
+            handlePost()
+            // const response = await axios.post(ENDPOINT, data)
+            // if(response){
+            //     alert('Contraseña enviada correctamente');
+            //     router.push('/sign-in')
+                
+            // }else{
+            //     alert('Error al enviar contraseña')
+            // }
+            // console.log(response.data)
         } catch (e:unknown) {
-            alert(e)
+            console.log(e)
+            // alert(e)
         }
     }
   }
@@ -116,6 +137,9 @@ export default function ResetPassword() {
         </div>
     </form>
     </div>
+    <Toaster
+        position='bottom-right'
+    />
 </div>
     )
 }
