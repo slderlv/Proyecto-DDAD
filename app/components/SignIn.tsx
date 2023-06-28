@@ -19,16 +19,22 @@ export default function SignIn() {
   const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
   const isValid = (): boolean => {
-    if (email.trim().length === 0) {
-      alert('Ingrese un correo electrónico');
+    // if (email.trim().length === 0) {
+    //   toast("Ingrese un correo...", {
+    //     icon: "⚠"
+    //   })
+    //   return false;
+    // }
+    if (!regex.test(email)) {
+      toast("Ingrese un correo valido", {
+        icon: "⚠"
+      })
       return false;
     }
     if (password.trim().length === 0) {
-      alert('Ingrese una contraseña');
-      return false;
-    }
-    if (!regex.test(email)) {
-      alert('Ingrese un correo electrónico válido');
+      toast("Ingrese contraseña", {
+        icon: "⚠"
+      })
       return false;
     }
     return true;
