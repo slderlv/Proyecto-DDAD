@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState('')
@@ -38,6 +39,7 @@ export default function ChangePassword() {
           }
         }
         const response = await axios.patch(ENDPOINT, data, config)
+        // toast('Hola',  { hideProgressBar: true, autoClose: 2000, type: 'success' })
         if (response) {
           alert('Contraseña cambiada correctamente');
           router.push('/sign-in')
@@ -135,6 +137,7 @@ export default function ChangePassword() {
               type="submit"
               className="w-full inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
               onClick={handlePasswordChange}
+              // onClick= {toast('Hola', { hideProgressBar: true, autoClose: 2000, type: 'success' })}
             >{!loading ? (
               'Cambiar contraseña'
             ) : (

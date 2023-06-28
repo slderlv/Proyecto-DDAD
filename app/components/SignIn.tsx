@@ -4,6 +4,7 @@ import axios from 'axios'
 import { LoginResponse } from '@/config/interfaces'
 import { useRouter } from 'next/navigation'
 import UserContext from '@/contexts/UserContext'
+import { Toaster, toast } from 'react-hot-toast'
 
 export default function SignIn() {
   const [email, setEmail] = React.useState('')
@@ -34,6 +35,7 @@ export default function SignIn() {
   };
   const handleSignIn = async (event: any) => {
     event.preventDefault()
+    // toast("hola")
     if (isValid()) {
       setLoading(true)
       try {
@@ -42,16 +44,37 @@ export default function SignIn() {
           email: email,
           password: password
         }
-        const response = await axios.post(ENDPOINT, data)
-        if (response) {
-          const { token } = response.data
-          localStorage.setItem('token', token)
-          alert('Acceso correcto')
-          router.push('/menu')
-        } else {
-          setLoading(false)
-          alert('Acceso incorrecto')
-        }
+        const handlePost = async () => {
+          try {
+            const response = await toast.promise(axios.post(ENDPOINT, data), {
+              
+              loading: 'Enviando datos...',
+              success: (data) => {
+                // console.log(data)
+                if (data) {
+                  const { token } = data.data;
+                  localStorage.setItem('token', token);
+                  
+                  router.push('/menu');
+                  return '¡Acceso correcto!';
+                } 
+                return "Error"
+              },
+              error: (error) => {
+                console.error('¡Ups! Algo salió mal.');
+                console.error('Error:', error);
+        
+                setLoading(false);
+                return 'Acceso incorrecto.';
+              },
+            });
+        
+            console.log('Respuesta:', response);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        handlePost();
       } catch (error: unknown) {
         setLoading(false)
         alert(error)
@@ -206,7 +229,7 @@ export default function SignIn() {
                 className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
                 onClick={handleSignIn}
                 disabled={loading}
-              >{!loading ? (
+              > {!loading ? (
                 'Inicia Sesión'
               ) : (
                 <>
@@ -219,6 +242,9 @@ export default function SignIn() {
           </div>
         </form>
       </div>
+      <Toaster
+        position='bottom-right'
+      />
     </div>
   )
 }
