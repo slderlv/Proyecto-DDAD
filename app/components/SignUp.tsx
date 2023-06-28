@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { City } from '@/config/interfaces'
-import { toast } from 'react-toastify'
+import { Toaster, toast } from 'react-hot-toast'
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState('')
@@ -21,28 +21,44 @@ export default function SignUp() {
   const isValid = (): boolean => {
     switch (true) {
       case firstName.trim().length === 0:
-        setMessage('Ingrese un nombre')
+        toast("Ingrese un nombre", {
+          icon: "⚠"
+        })
         return false
       case lastName.trim().length === 0:
-        setMessage('Ingrese un apellido')
+        toast("Ingrese un apellido", {
+          icon: "⚠"
+        })
         return false
       case email.trim().length === 0:
-        setMessage('Ingrese un correo electrónico')
+        toast("Ingrese un correo electronico", {
+          icon: "⚠"
+        })
         return false
       case city.trim().length === 0:
-        setMessage('Seleccione una ciudad')
+        toast("Ingrese una ciudad", {
+          icon: "⚠"
+        })
         return false
       case password.trim().length === 0:
-        setMessage('Ingrese una contraseña')
+        toast("Ingrese una contraseña", {
+          icon: "⚠"
+        })
         return false
       case passwordConfirmation.trim().length === 0:
-        setMessage('Confirme la contraseña')
+        toast("Confirme la contraseña", {
+          icon: "⚠"
+        })
         return false
       case password !== passwordConfirmation:
-        setMessage('Las contraseñas no coinciden')
+        toast("Las contraseñas no coinciden", {
+          icon: "⚠"
+        })
         return false
       case (!regex.test(email)):
-        setMessage('Ingrese un correo electrónico válido')
+        toast("Ingrese un correo electronico valido", {
+          icon: "⚠"
+        })
         return false
     }
     setMessage('')
@@ -61,28 +77,44 @@ export default function SignUp() {
           city: city,
           password: password,
         }
-        const response = await axios.post(ENDPOINT, data)
-        if (response) {
-          alert('Usuario creado correctamente')
-          router.push('/sign-in')
-        }
+        const handlePost = async () => {
+          try {
+            const response = await toast.promise(axios.post(ENDPOINT, data), {
+              
+              loading: 'Enviando datos...',
+              success: (data) => {
+                // console.log(data)
+                if (data) {
+                  
+                  router.push('/sign-in')
+                  return '¡Cuenta creada correctamente!';
+                } 
+                return "Error"
+              },
+              error: (error) => {
+                console.error('¡Ups! Algo salió mal.');
+                console.error('Error:', error);
+        
+                setLoading(false);
+                return 'El correo ya existe.';
+              },
+            });
+        
+            console.log('Respuesta:', response);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        handlePost();
+        
+        
         setLoading(false)
       } catch (error: unknown) {
         setLoading(false)
         alert(error)
       }
-    } else {
-      console.log(toast.warn('🦄 Wow so easy!', {
-        position: "top-center",
-        autoClose: 4000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      }))
-    }
+    } 
+    
 
   }
   useEffect(() => {
@@ -262,6 +294,9 @@ export default function SignUp() {
             </form>
           </div>
         </main>
+        <Toaster
+          position='bottom-right'
+        />
       </div>
     </section>
 
