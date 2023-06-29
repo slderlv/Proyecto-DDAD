@@ -13,7 +13,9 @@ export default function ResetPassword() {
 
   const isValid = ():boolean => {
     if (!regex.test(email)) {
-        alert('Ingrese un correo electrónico válido');
+        toast("Ingrese un correo valido", {
+            icon: "⚠"
+          })
         return false;
     }
     return true;
