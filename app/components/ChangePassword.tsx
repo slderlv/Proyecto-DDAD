@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-toastify'
+import { toast, Toaster } from 'react-hot-toast'
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState('')
@@ -29,23 +29,45 @@ export default function ChangePassword() {
         if (!token) {
           router.push('/sign-in')
         }
-        const ENDPOINT = 'http://localhost:3000/users/password'
-        const data = {
-          password: newPassword
-        }
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const handlePatch = async () => {
+          const ENDPOINT = 'http://localhost:3000/users/password'
+          const data = {
+            password: newPassword
           }
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+          const response = await toast.promise(axios.patch(ENDPOINT, data, config),{
+            loading: "Cambiando contraseña...",
+            success: () => {
+              const TOKEN_CLOSE_ENDPOINT = 'http://localhost:3000/token/close'
+              const TOKEN_CLOSE_DATA = {
+                jwt : token
+              }
+              axios.post(TOKEN_CLOSE_ENDPOINT, TOKEN_CLOSE_DATA)
+              
+              router.push('/sign-in');
+              setLoading(false);
+
+
+              return "Contraseña cambiada con exito"
+            },
+            error: () => {
+              setLoading(false);
+              return "Error al cambiar contraseña"
+            }
+          });
+
         }
-        const response = await axios.patch(ENDPOINT, data, config)
+        handlePatch();
         // toast('Hola',  { hideProgressBar: true, autoClose: 2000, type: 'success' })
-        if (response) {
-          alert('Contraseña cambiada correctamente');
-          router.push('/sign-in')
-        } else {
-          alert('Error al cambiar contraseña')
-        }
+        // if (response) {
+        //   alert('Contraseña cambiada correctamente');
+        // } else {
+        //   alert('Error al cambiar contraseña')
+        // }
       } catch (e: unknown) {
         setLoading(false)
         alert(e)
@@ -150,6 +172,9 @@ export default function ChangePassword() {
           </div>
         </form>
       </div>
+      <Toaster
+        position='bottom-right'
+      />
     </div>
   )
 }

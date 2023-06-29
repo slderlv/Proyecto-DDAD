@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { City, UserProfile } from '@/config/interfaces'
 import { useRouter } from 'next/navigation'
+import { toast, Toaster } from 'react-hot-toast'
 
 export default function Profile() {
   const [user, setUser] = useState<UserProfile>({} as UserProfile)
@@ -68,16 +69,23 @@ export default function Profile() {
   }, [])
 
   const isValid = (): boolean => {
-    switch (true) {
-      case username.trim().length === 0:
-        alert('Ingrese un apodo válido')
-        return false;
-      case firstName.trim().length === 0:
-        alert('Ingrese un nombre válido')
-        return false;
-      case lastName.trim().length === 0:
-        alert('Ingrese un apellido válido')
-        return false;
+    if (firstName.trim().length === 0){
+      toast("Ingrese un nombre valido", {
+        icon: "⚠"
+      })
+      return false;
+    }
+    if (lastName.trim().length === 0){
+      toast("Ingrese un apellido valido", {
+        icon: "⚠"
+      })
+      return false;
+    }
+    if (username.trim().length === 0){
+      toast("Ingrese un apodo valido", {
+        icon: "⚠"
+      })
+      return false;
     }
     return true;
   }
@@ -86,32 +94,38 @@ export default function Profile() {
     if (isValid()) {
       setLoading(true)
       try {
-        const token = localStorage.getItem('token');
-        const ENDPOINT = process.env.MS_USERS + '/users/edit'
-        const data = {
-          nickname: username,
-          first_name: firstName,
-          last_name: lastName,
-          city: city
-        }
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const handlePatch = async () => {
+          const token = localStorage.getItem('token');
+          const ENDPOINT = process.env.MS_USERS + '/users/edit'
+          const data = {
+            nickname: username,
+            first_name: firstName,
+            last_name: lastName,
+            city: city
           }
-        }
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
 
-        const response = await axios.patch(ENDPOINT, data, config)
-        console.log(response)
-        if (response) {
-          alert('Perfil actualizado correctamente')
-          router.push('/menu')
-        } else {
-          setLoading(false)
-          alert('Error al actualizar el perfil')
+          const response = await toast.promise(axios.patch(ENDPOINT, data, config),{
+            loading:"Actualizando perfil...",
+            success:() => {
+              router.push('/menu')
+              return "Perfil actualizado correctamente"
+            },
+            error: () => {
+              setLoading(false)
+              return "Error al actualizar el perfil"
+            },
+          });
         }
+        handlePatch()
+
       } catch (e: unknown) {
         setLoading(false)
-        alert(e)
+        console.error(e);
       }
     }
   }
@@ -215,6 +229,9 @@ export default function Profile() {
           </form>
         </div>
       </div>
+      <Toaster
+        position='bottom-right'
+      />
     </div>
   )
 }

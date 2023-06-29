@@ -111,7 +111,7 @@ export default function SignUp() {
         setLoading(false)
       } catch (error: unknown) {
         setLoading(false)
-        alert(error)
+        console.error(error);
       }
     } 
     
