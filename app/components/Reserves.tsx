@@ -3,6 +3,8 @@ import { Reserve } from "@/config/interfaces"
 import axios from "axios"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
+import { toast, Toaster } from "react-hot-toast";
+
 
 function isGreaterThanToday(date: string): boolean {
   const today = new Date();
@@ -48,10 +50,15 @@ export default function Reserves() {
     const ENDPOINT = process.env.MS_RESERVES + "/reserves/" + id
     try {
       const response = await axios.patch(ENDPOINT)
-      if (response) {
-        alert("Reserva cancelada correctamente")
-        router.push("/menu")
+      const handlePatch = async () => {
+        const response = await toast.promise(axios.patch(ENDPOINT), {
+          loading: "Cancelando reserva...",
+          success: "Reserva cancelada con exito!",
+          error: "Ocurrio un error"
+        })
       }
+      handlePatch()
+      
     } catch (error: unknown) {
       console.log(error)
     }
@@ -142,6 +149,9 @@ export default function Reserves() {
             </svg>Cargando...
           </div>
         </div>
+        <Toaster
+          position="bottom-right"
+        />
       )}
     </div>
   )
