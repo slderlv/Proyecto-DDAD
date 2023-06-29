@@ -83,7 +83,7 @@ export default function SignIn() {
         handlePost();
       } catch (error: unknown) {
         setLoading(false)
-        alert(error)
+        console.error(error);
       }
     }
   }

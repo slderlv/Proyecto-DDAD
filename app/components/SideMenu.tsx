@@ -18,7 +18,7 @@ export function SideMenu(userProfile: UserProfile) {
         toast.success("Sesion cerrada con exito!")
         router.push('/sign-in')
       } else {
-        toast.error("Sesion cerrada con exito!")
+        toast.error("Error al cerrar sesion")
       }
     } catch (error: unknown) {
       console.log(error)
