@@ -27,11 +27,12 @@ export default function Item() {
     return formattedDate
   }
 
-  const compareTime = (endTime: string): boolean => {
+  const compareTime = (startTime: string): boolean => {
+    if (!startTime) return false
     const currentTime = new Date()
     const currentHour = currentTime.getHours()
     const currentMinutes = currentTime.getMinutes()
-    const [endHour] = endTime.split(':').map(Number)
+    const [endHour] = startTime.split(':').map(Number)
     if (endHour < currentHour) {
       return false
     } else if (endHour === currentHour && currentMinutes > 0) {
@@ -147,17 +148,23 @@ export default function Item() {
   useEffect(() => {
     if (item) {
       const getAvailability = async () => {
+        console.log(schedule?.start_time)
         const ENDPOINT = process.env.MS_RESERVES + `/availability/${item?.name}/${schedule?.start_time}`
+        if (!compareTime(schedule?.start_time!)) {
+          setAvailable(false)
+          return
+        }
         try {
           const response = await axios.get(ENDPOINT)
-          if (item.type.name === 'Libro') setAvailable(response.data)
+          console.log(response.data)
+          setAvailable(response.data)
         } catch (error: unknown) {
           console.log(error)
         }
       }
       getAvailability()
     }
-  }, [schedule])
+  }, [schedule, item])
 
   return (
     <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
@@ -168,7 +175,7 @@ export default function Item() {
           src={item?.id ? `${item?.id}.jpg` : "book.jpg"} />
       </div>
 
-      <div className="xl:w-2/5 md:w-1/2 lg:ml-8 md:ml-6 md:mt-0 mt-6">
+      <div className="xl:w-3/5 md:w-2/3 lg:ml-8 md:ml-6 md:mt-0 mt-6">
         <div className="border-b border-gray-200 pb-6">
           <p className="text-sm leading-none text-gray-600 dark:text-gray-300 ">Id: {item?.id}</p>
           <h1 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 dark:text-white mt-2">{item?.name}</h1>
@@ -209,7 +216,6 @@ export default function Item() {
                   if (item?.type.name === 'Sala') {
                     const selectedSchedule = schedules.find((schedule) => schedule.start_time === event.target.value)
                     if (selectedSchedule?.end_time) {
-                      setAvailable(compareTime(selectedSchedule.end_time))
                       setSchedule(selectedSchedule)
                     }
                   }
@@ -251,7 +257,7 @@ export default function Item() {
             </svg>
             {item?.type.name === 'Libro' ? (
               <>
-                No disponible hasta: {formatDate(endDate)}
+                Fecha estimada de reposición: {formatDate(endDate)}
               </>
             ) : (
               "No disponible"

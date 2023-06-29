@@ -4,12 +4,11 @@ import { SideMenu } from "../components/SideMenu";
 import axios from "axios";
 import { Item, UserProfile } from "@/config/interfaces";
 import { useRouter } from "next/navigation";
-import { useItemContext } from "@/contexts/ItemContext";
 
 export default function Menu() {
   const [items, setItems] = useState<Item[]>([])
+  const [filter, setFilter] = useState<string>("")
   const [itemsDisplay, setItemsDisplay] = useState<Item[]>([])
-  const { selectedItem, setSelectedItem } = useItemContext()!
   const [user, setUser] = useState<UserProfile>({} as UserProfile)
   const [searchValue, setSearchValue] = useState("")
   const [data, setData] = useState<boolean>(false)
@@ -26,37 +25,44 @@ export default function Menu() {
     getItems()
   }, [])
 
-  const searchByTitle = (title: string): Item[] => {
-    if (title === '') {
-      return items
+  useEffect(() => {
+    console.log({ filter, searchValue })
+    if (filter && searchValue) {
+      const filteredItems: Item[] = setOrderBy(filter)
+      const foundProducts = filteredItems.filter((item) =>
+        item.name.toLowerCase().includes(searchValue.toLowerCase())
+      )
+      setItemsDisplay(foundProducts)
+    } else if (filter) {
+      const filteredItems: Item[] = setOrderBy(filter)
+      setItemsDisplay(filteredItems)
+    } else if (searchValue) {
+      const foundProducts = items.filter((item) =>
+        item.name.toLowerCase().includes(searchValue.toLowerCase())
+      )
+      setItemsDisplay(foundProducts)
+    } else {
+      setItemsDisplay(items)
     }
-    const foundProducts = items.filter((item) =>
-      item.name.toLowerCase().includes(title.toLowerCase())
-    )
-    return foundProducts
-  }
+  }, [filter, searchValue])
 
-  const handleSortByChange = (event: any) => {
-    const filteredItems = setFilter(event.target.value)
-    setItemsDisplay(filteredItems)
+  const setOrderBy = (option: string): Item[] => {
+    switch (option) {
+      case ('Title, DESC'):
+        return items.sort((a, b) => b.name.localeCompare(a.name))
+      case ('Title, ASC'):
+        return items.sort((a, b) => a.name.localeCompare(b.name))
+      default:
+        return items
+    }
   }
 
   const handleItemSelection = (item: Item) => {
-    setSelectedItem(item)
-    if (selectedItem) {
-      localStorage.setItem('selectedItemId', selectedItem.id + "")
+    try {
+      localStorage.setItem('selectedItemId', item!.id + "")
       router.push("/item")
-    }
-  }
-
-  const setFilter = (option: string): Item[] => {
-    switch (true) {
-      case (option === 'Title, DESC'):
-        return itemsDisplay.sort((a, b) => b.name.localeCompare(a.name))
-      case (option === 'Title, ASC'):
-        return itemsDisplay.sort((a, b) => a.name.localeCompare(b.name))
-      default:
-        return items
+    } catch (error: unknown) {
+      console.log(error)
     }
   }
 
@@ -157,29 +163,23 @@ export default function Menu() {
                   id="FilterInput"
                   placeholder="Nombre del producto"
                   className="w-full rounded-md border-gray-200 shadow-sm sm:text-sm px-2"
-                  onChange={event => setSearchValue(event.target.value)}
+                  onChange={event => {
+                    console.log("on change input")
+                    setSearchValue(event.target.value)
+                  }
+                  }
                 />
               </label>
             </div>
-            <button
-              type="button"
-              className="text-sm text-gray-900 underline underline-offset-4 mb-3"
-              onClick={event => {
-                const searchResults: Item[] = searchByTitle(searchValue)
-                setItemsDisplay(searchResults)
-              }}
-            >
-              Buscar
-            </button>
           </div>
 
           <div className="hidden sm:block">
             <label htmlFor="SortBy" className="sr-only">Ordenar por</label>
 
             <select id="SortBy" className="h-10 rounded border-gray-300 text-sm"
-              onChange={handleSortByChange}
+              onChange={(event) => setFilter(event.target.value)}
             >
-              <option value="Default">Sin orden</option>
+              <option value="Default">Ordenar</option>
               <option value="Title, DESC">Título, DESC</option>
               <option value="Title, ASC">Título, ASC</option>
             </select>
@@ -200,12 +200,12 @@ export default function Menu() {
 
                   <div className="relative bg-white pt-3">
                     <h3 className="text-xs text-gray-700 group-hover:underline group-hover:underline-offset-4">
-                      {item.name}
+                      #{item.id}
                     </h3>
 
                     <p className="mt-2">
                       <span className="tracking-wider text-gray-900">
-                        {item.id}
+                        {item.name}
                       </span>
                     </p>
                   </div>
