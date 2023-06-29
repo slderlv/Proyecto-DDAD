@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { UserProfile } from "@/config/interfaces";
 import axios from "axios";
 import { useRouter } from 'next/navigation'
+import { toast, Toaster } from "react-hot-toast";
 
 export function SideMenu(userProfile: UserProfile) {
   const router = useRouter()
@@ -14,11 +15,10 @@ export function SideMenu(userProfile: UserProfile) {
       }
       const response = await axios.post(ENDPOINT, data)
       if (response) {
-        console.log(response.data)
-        alert('Sesión cerrada correctamente')
+        toast.success("Sesion cerrada con exito!")
         router.push('/sign-in')
       } else {
-        alert('Error al cerrar sesión')
+        toast.error("Sesion cerrada con exito!")
       }
     } catch (error: unknown) {
       console.log(error)
@@ -166,6 +166,9 @@ export function SideMenu(userProfile: UserProfile) {
           </div>
         </a>
       </div>
+      <Toaster
+        position="bottom-right"
+      />
     </div>
   )
 }
