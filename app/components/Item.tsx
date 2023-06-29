@@ -4,6 +4,7 @@ import { addDays, format } from "date-fns";
 import { Item, Schedule, Type } from "../../config/interfaces"
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function Item() {
   const [item, setItem] = useState<Item>()
@@ -44,6 +45,16 @@ export default function Item() {
   const handleReservation = async () => {
     const formattedToday = format(new Date, "yyyy-MM-dd");
     const ENDPOINT = process.env.MS_RESERVES + '/reserves'
+    const handlePost = async (data: any) => {
+      const response = await toast.promise(axios.post(ENDPOINT,data),{
+        loading: "Generando reserva... ",
+        success: () => {
+          router.push('/menu');
+          return "Reserva generada con exito! ";
+        },
+        error: "Error en la reserva"
+      })
+    }
     let data
     if (item?.type.name === 'Libro') {
       data = {
@@ -54,6 +65,7 @@ export default function Item() {
         client_id: localStorage.getItem('clientID'),
         item_name: item.name
       }
+      handlePost(data);
     }
     if (item?.type.name === 'Sala') {
       data = {
@@ -63,12 +75,13 @@ export default function Item() {
         client_id: localStorage.getItem('clientID'),
         item_name: item.name
       }
+      handlePost(data);
     }
-    const response = await axios.post(ENDPOINT, data)
-    if (response) {
-      alert("Item reservado con éxito")
-      router.push("/menu")
-    }
+    // const response = await axios.post(ENDPOINT, data)
+    // if (response) {
+    //   alert("Item reservado con éxito")
+    //   router.push("/menu")
+    // }
   }
 
   const descriptionBook = (description: string) => {
@@ -105,7 +118,10 @@ export default function Item() {
 
         if (selectedItem.type.name == "Libro") {
           descriptionBook(selectedItem.description)
-          setEndDate(responseData.reserves[response.data.reserves.length - 1].end_date)
+          if(responseData.reserves.length > 0) {
+            setEndDate(responseData.reserves[response.data.reserves.length - 1].end_date)
+          }
+          // console.log(available)
         }
         if (selectedItem.type.name === 'Sala') {
           descriptionRoom(selectedItem.description)
@@ -137,6 +153,7 @@ export default function Item() {
             libroSchedules?.sort((a, b) => a.id - b.id)
             setSchedules(libroSchedules)
           }
+          console.log(libroSchedules)
         }
       } catch (error: unknown) {
         console.log(error)
@@ -148,13 +165,17 @@ export default function Item() {
   useEffect(() => {
     if (item) {
       const getAvailability = async () => {
+        // console.log(schedule?.start_time)
         const ENDPOINT = process.env.MS_RESERVES + `/availability/${item?.name}/${schedule?.start_time}`
+        
         if (!compareTime(schedule?.start_time!)) {
           setAvailable(false)
           return
         }
         try {
           const response = await axios.get(ENDPOINT)
+          console.log("aca")
+          console.log(response.data)
           setAvailable(response.data)
         } catch (error: unknown) {
           console.log(error)
@@ -265,6 +286,9 @@ export default function Item() {
 
 
       </div>
+      <Toaster
+        position="bottom-right"
+      />
     </div>
   )
 }
