@@ -32,6 +32,7 @@ export default function Reserves() {
       try {
         const response = await axios.get(ENDPOINT)
         const responseData: Reserve[] = response.data
+        console.log(responseData)
         if (responseData) {
           setData(true)
         }
@@ -59,9 +60,9 @@ export default function Reserves() {
   return (
     <div className="w-screen h-screen bg-gradient-radial from-color3 via-color2 to-color1 flex justify-center items-center">
       <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6" src="mpt.png" alt="Logo"
-        onClick={event => window.location.href = "/menu"} />
+        onClick={() => window.location.href = "/menu"} />
       {data ? (
-        <div className="flex flex-col bg-gray-100 rounded-md w-2/3">
+        <div className="inline-block bg-gray-100 rounded-md ">
           <div className="sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-y-auto max-h-[80vh]">
@@ -70,8 +71,8 @@ export default function Reserves() {
                     <tr>
                       <th scope="col" className="px-6 py-4">ID Reserva</th>
                       <th scope="col" className="px-6 py-4">Nombre</th>
-                      <th scope="col" className="px-6 py-4">Fecha de inicio</th>
-                      <th scope="col" className="px-6 py-4">Fecha límite</th>
+                      <th scope="col" className="px-6 py-4">Inicio</th>
+                      <th scope="col" className="px-6 py-4">Límite</th>
                       <th scope="col" className="px-6 py-4">Estado</th>
                     </tr>
                   </thead>
@@ -84,7 +85,7 @@ export default function Reserves() {
                         state = "Cancelado"
                       } else if (!reserve.pending) {
                         rowClassName = "border-b border-success-200 bg-success-100 text-neutral-800"
-                        state = "Entregado"
+                        state = reserve.end_date === null ? "Finalizado" : "Entregado";
                       } else if (reserve.pending && !isGreaterThanToday(reserve.end_date!)) {
                         rowClassName = "border-b border-danger-200 bg-danger-100 text-neutral-800"
                         state = "Fuera de plazo"
@@ -96,8 +97,8 @@ export default function Reserves() {
                             #{reserve.id}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">{reserve.item.name}</td>
-                          <td className="whitespace-nowrap px-6 py-4">{reserve.start_date}</td>
-                          <td className="whitespace-nowrap px-6 py-4">{formatDate(reserve.end_date!)}</td>
+                          <td className="whitespace-nowrap px-6 py-4">{reserve.start_time !== null ? `${reserve.start_date} ${reserve.start_time}` : reserve.start_date}</td>
+                          <td className="whitespace-nowrap px-6 py-4">{reserve.end_date ? formatDate(reserve.end_date) : `${reserve.start_date} ${reserve.end_time}`}</td>
                           <td className="whitespace-nowrap px-6 py-4">
                             {state === "Pendiente" ? (
                               <>
