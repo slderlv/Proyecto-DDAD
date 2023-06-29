@@ -6,6 +6,7 @@ import { Item, UserProfile } from "@/config/interfaces";
 import { useRouter } from "next/navigation";
 
 export default function Menu() {
+  const [render, setRender] = useState(false);
   const [items, setItems] = useState<Item[]>([])
   const [filter, setFilter] = useState<string>("")
   const [itemsDisplay, setItemsDisplay] = useState<Item[]>([])
@@ -26,7 +27,6 @@ export default function Menu() {
   }, [])
 
   useEffect(() => {
-    console.log({ filter, searchValue })
     if (filter && searchValue) {
       const filteredItems: Item[] = setOrderBy(filter)
       const foundProducts = filteredItems.filter((item) =>
@@ -36,6 +36,7 @@ export default function Menu() {
     } else if (filter) {
       const filteredItems: Item[] = setOrderBy(filter)
       setItemsDisplay(filteredItems)
+      setRender(prevState => !prevState)
     } else if (searchValue) {
       const foundProducts = items.filter((item) =>
         item.name.toLowerCase().includes(searchValue.toLowerCase())
@@ -47,8 +48,10 @@ export default function Menu() {
   }, [filter, searchValue])
 
   const setOrderBy = (option: string): Item[] => {
+    console.log("Entra a la función OrderBy")
     switch (option) {
       case ('Title, DESC'):
+        console.log("Entra al switch - case y se ordenan")
         return items.sort((a, b) => b.name.localeCompare(a.name))
       case ('Title, ASC'):
         return items.sort((a, b) => a.name.localeCompare(b.name))
@@ -163,11 +166,7 @@ export default function Menu() {
                   id="FilterInput"
                   placeholder="Nombre del producto"
                   className="w-full rounded-md border-gray-200 shadow-sm sm:text-sm px-2"
-                  onChange={event => {
-                    console.log("on change input")
-                    setSearchValue(event.target.value)
-                  }
-                  }
+                  onChange={(event) => setSearchValue(event.target.value)}
                 />
               </label>
             </div>
@@ -177,7 +176,10 @@ export default function Menu() {
             <label htmlFor="SortBy" className="sr-only">Ordenar por</label>
 
             <select id="SortBy" className="h-10 rounded border-gray-300 text-sm"
-              onChange={(event) => setFilter(event.target.value)}
+              onChange={(event) => {
+                console.log("valor ingresado: " + event.target.value)
+                setFilter(event.target.value)
+              }}
             >
               <option value="Default">Ordenar</option>
               <option value="Title, DESC">Título, DESC</option>

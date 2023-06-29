@@ -148,7 +148,6 @@ export default function Item() {
   useEffect(() => {
     if (item) {
       const getAvailability = async () => {
-        console.log(schedule?.start_time)
         const ENDPOINT = process.env.MS_RESERVES + `/availability/${item?.name}/${schedule?.start_time}`
         if (!compareTime(schedule?.start_time!)) {
           setAvailable(false)
@@ -156,7 +155,6 @@ export default function Item() {
         }
         try {
           const response = await axios.get(ENDPOINT)
-          console.log(response.data)
           setAvailable(response.data)
         } catch (error: unknown) {
           console.log(error)
