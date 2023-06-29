@@ -14,7 +14,6 @@ export default function SignUp() {
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [message, setMessage] = useState<string>('')
   const router = useRouter()
   const regex = /^[a-z0-9]+(?:\.[a-z0-9]+){0,5}@[a-z0-9]+(?:\.[a-z0-9]{2,15}){1,5}$/;
 
@@ -45,6 +44,11 @@ export default function SignUp() {
           icon: "⚠"
         })
         return false
+      case password.trim().length <= 3:
+        toast("Contraseña poco segura", {
+          icon: "⚠"
+        })
+        return false
       case passwordConfirmation.trim().length === 0:
         toast("Confirme la contraseña", {
           icon: "⚠"
@@ -61,7 +65,6 @@ export default function SignUp() {
         })
         return false
     }
-    setMessage('')
     return true
   }
   const handleSignUp = async (event: any) => {
@@ -80,41 +83,41 @@ export default function SignUp() {
         const handlePost = async () => {
           try {
             const response = await toast.promise(axios.post(ENDPOINT, data), {
-              
+
               loading: 'Enviando datos...',
               success: (data) => {
                 // console.log(data)
                 if (data) {
-                  
+
                   router.push('/sign-in')
                   return '¡Cuenta creada correctamente!';
-                } 
+                }
                 return "Error"
               },
               error: (error) => {
                 console.error('¡Ups! Algo salió mal.');
                 console.error('Error:', error);
-        
+
                 setLoading(false);
                 return 'El correo ya existe.';
               },
             });
-        
+
             console.log('Respuesta:', response);
           } catch (error) {
             console.error(error);
           }
         };
         handlePost();
-        
-        
+
+
         setLoading(false)
       } catch (error: unknown) {
         setLoading(false)
         console.error(error);
       }
-    } 
-    
+    }
+
 
   }
   useEffect(() => {

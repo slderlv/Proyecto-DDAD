@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { LoginResponse } from '@/config/interfaces'
 import { useRouter } from 'next/navigation'
-import UserContext from '@/contexts/UserContext'
 import { Toaster, toast } from 'react-hot-toast'
 
 export default function SignIn() {
@@ -41,7 +40,6 @@ export default function SignIn() {
   };
   const handleSignIn = async (event: any) => {
     event.preventDefault()
-    // toast("hola")
     if (isValid()) {
       setLoading(true)
       try {

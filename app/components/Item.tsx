@@ -19,6 +19,8 @@ export default function Item() {
   const [endDate, setEndDate] = useState<string>("")
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [schedule, setSchedule] = useState<Schedule>()
+  const [scheduleName, setScheduleName] = useState<string>("")
+  const [scheduleDate, setScheduleDate] = useState<string>("")
   const router = useRouter()
 
   const formatDate = (dateString: string): string => {
@@ -46,7 +48,7 @@ export default function Item() {
     const formattedToday = format(new Date, "yyyy-MM-dd");
     const ENDPOINT = process.env.MS_RESERVES + '/reserves'
     const handlePost = async (data: any) => {
-      const response = await toast.promise(axios.post(ENDPOINT,data),{
+      const response = await toast.promise(axios.post(ENDPOINT, data), {
         loading: "Generando reserva... ",
         success: () => {
           router.push('/menu');
@@ -77,11 +79,7 @@ export default function Item() {
       }
       handlePost(data);
     }
-    // const response = await axios.post(ENDPOINT, data)
-    // if (response) {
-    //   alert("Item reservado con éxito")
-    //   router.push("/menu")
-    // }
+
   }
 
   const descriptionBook = (description: string) => {
@@ -98,6 +96,28 @@ export default function Item() {
     setSize(partes[1])
     setExtras(partes[2])
   }
+
+  useEffect(() => {
+    const validateToken = async () => {
+      const ENDPOINT = process.env.MS_USERS + "/users/profile"
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/sign-in')
+      }
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+        const response = await axios.get(ENDPOINT, config)
+      } catch (error: unknown) {
+        console.log(error)
+        router.push("/sign-in")
+      }
+    }
+    validateToken()
+  })
 
   useEffect(() => {
     const getItem = async () => {
@@ -118,7 +138,7 @@ export default function Item() {
 
         if (selectedItem.type.name == "Libro") {
           descriptionBook(selectedItem.description)
-          if(responseData.reserves.length > 0) {
+          if (responseData.reserves.length > 0) {
             setEndDate(responseData.reserves[response.data.reserves.length - 1].end_date)
           }
           // console.log(available)
@@ -145,15 +165,14 @@ export default function Item() {
           if (salaSchedules) {
             salaSchedules?.sort((a, b) => a.id - b.id)
             setSchedules(salaSchedules)
-
           }
         } else if (item?.type.name === "Libro") {
           const libroSchedules = types.find((type) => type.name === "Libro")?.schedules
           if (libroSchedules) {
             libroSchedules?.sort((a, b) => a.id - b.id)
             setSchedules(libroSchedules)
+            setScheduleName(libroSchedules[0].name)
           }
-          console.log(libroSchedules)
         }
       } catch (error: unknown) {
         console.log(error)
@@ -163,19 +182,28 @@ export default function Item() {
   }, [item])
 
   useEffect(() => {
-    if (item) {
+    if (item?.type.name === 'Libro') {
+      const selectedSchedule = schedules.find((schedule) => schedule.name === scheduleName)
+      setSchedule(selectedSchedule)
+    }
+    if (item?.type.name === 'Sala') {
+      const selectedSchedule = schedules.find((schedule) => schedule.start_time === scheduleDate)
+      if (selectedSchedule?.end_time) {
+        setSchedule(selectedSchedule)
+      }
+    }
+  }, [scheduleName, scheduleDate, item, schedules])
+
+  useEffect(() => {
+    if (item && schedule) {
       const getAvailability = async () => {
-        // console.log(schedule?.start_time)
         const ENDPOINT = process.env.MS_RESERVES + `/availability/${item?.name}/${schedule?.start_time}`
-        
-        if (!compareTime(schedule?.start_time!)) {
+        if (item.type.name == 'Sala' && !compareTime(schedule?.start_time!)) {
           setAvailable(false)
           return
         }
         try {
           const response = await axios.get(ENDPOINT)
-          console.log("aca")
-          console.log(response.data)
           setAvailable(response.data)
         } catch (error: unknown) {
           console.log(error)
@@ -183,7 +211,7 @@ export default function Item() {
       }
       getAvailability()
     }
-  }, [schedule, item])
+  }, [item, schedule])
 
   return (
     <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
@@ -229,14 +257,10 @@ export default function Item() {
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                 onChange={(event) => {
                   if (item?.type.name === 'Libro') {
-                    const selectedSchedule = schedules.find((schedule) => schedule.name === event.target.value)
-                    setSchedule(selectedSchedule)
+                    setScheduleName(event.target.value)
                   }
                   if (item?.type.name === 'Sala') {
-                    const selectedSchedule = schedules.find((schedule) => schedule.start_time === event.target.value)
-                    if (selectedSchedule?.end_time) {
-                      setSchedule(selectedSchedule)
-                    }
+                    setScheduleDate(event.target.value)
                   }
                 }}
               >

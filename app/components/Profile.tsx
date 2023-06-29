@@ -6,13 +6,11 @@ import { useRouter } from 'next/navigation'
 import { toast, Toaster } from 'react-hot-toast'
 
 export default function Profile() {
-  const [user, setUser] = useState<UserProfile>({} as UserProfile)
   const [firstName, setFirstName] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
   const [cities, setCities] = useState<City[]>([])
   const [city, setCity] = useState<string>('')
   const [username, setUsername] = useState<string>('')
-  const [img, setImg] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -22,34 +20,38 @@ export default function Profile() {
       if (!token) {
         router.push('/sign-in')
       }
-      const ENDPOINT = 'http://localhost:3000/users/profile'
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-      const response = await axios.get(ENDPOINT, config)
-      /* const dataResponse: UserProfile = response.data */
-      if (response.data) {
-        const userProfile: UserProfile = {
-          email: response.data[0],
-          city: response.data[1],
-          role: response.data[2],
-          userInformationId: {
-            id: response.data[3].id,
-            first_name: response.data[3].first_name,
-            last_name: response.data[3].last_name,
-            nickname: response.data[3].nickname,
-            profile_image: response.data[3].profile_image
+      try {
+        const ENDPOINT = process.env.MS_USERS + '/users/profile'
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
         }
-        setUser(userProfile)
-        setFirstName(userProfile.userInformationId!.first_name)
-        setLastName(userProfile.userInformationId!.last_name)
-        if (userProfile.userInformationId!.nickname) {
-          setUsername(userProfile.userInformationId!.nickname)
+        const response = await axios.get(ENDPOINT, config)
+        /* const dataResponse: UserProfile = response.data */
+        if (response.data) {
+          const userProfile: UserProfile = {
+            email: response.data[0],
+            city: response.data[1],
+            role: response.data[2],
+            userInformationId: {
+              id: response.data[3].id,
+              first_name: response.data[3].first_name,
+              last_name: response.data[3].last_name,
+              nickname: response.data[3].nickname,
+              profile_image: response.data[3].profile_image
+            }
+          }
+          setFirstName(userProfile.userInformationId!.first_name)
+          setLastName(userProfile.userInformationId!.last_name)
+          if (userProfile.userInformationId!.nickname) {
+            setUsername(userProfile.userInformationId!.nickname)
+          }
+          setCity(userProfile.city)
         }
-        setCity(userProfile.city)
+      } catch (error: unknown) {
+        router.push("/sign-in")
+        console.log(error)
       }
     }
     getProfile()
@@ -69,19 +71,19 @@ export default function Profile() {
   }, [])
 
   const isValid = (): boolean => {
-    if (firstName.trim().length === 0){
+    if (firstName.trim().length === 0) {
       toast("Ingrese un nombre valido", {
         icon: "⚠"
       })
       return false;
     }
-    if (lastName.trim().length === 0){
+    if (lastName.trim().length === 0) {
       toast("Ingrese un apellido valido", {
         icon: "⚠"
       })
       return false;
     }
-    if (username.trim().length === 0){
+    if (username.trim().length === 0) {
       toast("Ingrese un apodo valido", {
         icon: "⚠"
       })
@@ -109,9 +111,9 @@ export default function Profile() {
             }
           }
 
-          const response = await toast.promise(axios.patch(ENDPOINT, data, config),{
-            loading:"Actualizando perfil...",
-            success:() => {
+          const response = await toast.promise(axios.patch(ENDPOINT, data, config), {
+            loading: "Actualizando perfil...",
+            success: () => {
               router.push('/menu')
               return "Perfil actualizado correctamente"
             },

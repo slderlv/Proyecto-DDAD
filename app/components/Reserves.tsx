@@ -5,11 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 import { toast, Toaster } from "react-hot-toast";
 
-
 function isGreaterThanToday(date: string): boolean {
   const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0]; // Obtener la fecha actual en formato "YYYY-MM-DD"
-
+  const formattedDate = today.toISOString().split('T')[0];
   return formattedDate < date;
 }
 
@@ -25,8 +23,30 @@ function formatDate(date: string): string {
 export default function Reserves() {
   const [reserves, setReserves] = useState<Reserve[]>([])
   const [data, setData] = useState<boolean>(false)
+  const [reload, setReload] = useState<boolean>(false)
   const router = useRouter()
 
+  useEffect(() => {
+    const validateToken = async () => {
+      const ENDPOINT = process.env.MS_USERS + "/users/profile"
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/sign-in')
+      }
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+        const response = await axios.get(ENDPOINT, config)
+      } catch (error: unknown) {
+        console.log(error)
+        router.push("/sign-in")
+      }
+    }
+    validateToken()
+  })
   useEffect(() => {
     const getReserves = async () => {
       const clientId = localStorage.getItem('clientID')
@@ -34,7 +54,6 @@ export default function Reserves() {
       try {
         const response = await axios.get(ENDPOINT)
         const responseData: Reserve[] = response.data
-        console.log(responseData)
         if (responseData) {
           setData(true)
         }
@@ -44,7 +63,7 @@ export default function Reserves() {
       }
     }
     getReserves()
-  }, [])
+  }, [reload])
 
   const handleCancellation = async (id: number) => {
     const ENDPOINT = process.env.MS_RESERVES + "/reserves/" + id
@@ -53,12 +72,15 @@ export default function Reserves() {
       const handlePatch = async () => {
         const response = await toast.promise(axios.patch(ENDPOINT), {
           loading: "Cancelando reserva...",
-          success: "Reserva cancelada con exito!",
+          success: () => {
+            setReload(prevState => !prevState)
+            return "Reserva cancelada con éxito!"
+          },
           error: "Ocurrio un error"
         })
       }
       handlePatch()
-      
+
     } catch (error: unknown) {
       console.log(error)
     }
@@ -66,68 +88,92 @@ export default function Reserves() {
 
   return (
     <div className="w-screen h-screen bg-gradient-radial from-color3 via-color2 to-color1 flex justify-center items-center">
-      <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6" src="mpt.png" alt="Logo"
-        onClick={() => window.location.href = "/menu"} />
+      <img
+        className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6"
+        src="mpt.png"
+        alt="Logo"
+        onClick={() => (window.location.href = '/menu')}
+      />
       {data ? (
-        <div className="inline-block bg-gray-100 rounded-md ">
-          <div className="sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-              <div className="overflow-y-auto max-h-[80vh]">
-                <table className="w-full text-left text-sm font-light">
-                  <thead className="border-b font-medium dark:border-neutral-500">
-                    <tr>
-                      <th scope="col" className="px-6 py-4">ID Reserva</th>
-                      <th scope="col" className="px-6 py-4">Nombre</th>
-                      <th scope="col" className="px-6 py-4">Inicio</th>
-                      <th scope="col" className="px-6 py-4">Límite</th>
-                      <th scope="col" className="px-6 py-4">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reserves.map((reserve) => {
-                      let rowClassName = "border-b border-primary-200 bg-primary-100 text-neutral-800";
-                      let state: string = "Pendiente"
-                      if (reserve.cancelled) {
-                        rowClassName = "border-b border-warning-200 bg-warning-100 text-neutral-800"
-                        state = "Cancelado"
-                      } else if (!reserve.pending) {
-                        rowClassName = "border-b border-success-200 bg-success-100 text-neutral-800"
-                        state = reserve.end_date === null ? "Finalizado" : "Entregado";
-                      } else if (reserve.pending && !isGreaterThanToday(reserve.end_date!)) {
-                        rowClassName = "border-b border-danger-200 bg-danger-100 text-neutral-800"
-                        state = "Fuera de plazo"
-                      }
+        reserves.length === 0 ? (
+          <p className="text-center text-gray-100 text-lg">Todavía no has hecho reservas.</p>
+        ) : (
+          <div className="inline-block bg-gray-100 rounded-md">
+            <div className="sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+                <div className="overflow-y-auto max-h-[80vh]">
+                  <table className="w-full text-left text-sm font-light">
+                    <thead className="border-b font-medium dark:border-neutral-500">
+                      <tr>
+                        <th scope="col" className="px-6 py-4">
+                          ID Reserva
+                        </th>
+                        <th scope="col" className="px-6 py-4">
+                          Nombre
+                        </th>
+                        <th scope="col" className="px-6 py-4">
+                          Inicio
+                        </th>
+                        <th scope="col" className="px-6 py-4">
+                          Límite
+                        </th>
+                        <th scope="col" className="px-6 py-4">
+                          Estado
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reserves.map((reserve) => {
+                        let rowClassName = 'border-b border-primary-200 bg-primary-100 text-neutral-800';
+                        let state = 'Pendiente';
+                        if (reserve.cancelled) {
+                          rowClassName = 'border-b border-warning-200 bg-warning-100 text-neutral-800';
+                          state = 'Cancelado';
+                        } else if (!reserve.pending) {
+                          rowClassName = 'border-b border-success-200 bg-success-100 text-neutral-800';
+                          state = reserve.end_date === null ? 'Finalizado' : 'Entregado';
+                        } else if (reserve.pending && !isGreaterThanToday(reserve.end_date!)) {
+                          rowClassName = 'border-b border-danger-200 bg-danger-100 text-neutral-800';
+                          state = 'Fuera de plazo';
+                        }
 
-                      return (
-                        <tr key={reserve.id} className={rowClassName}>
-                          <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            #{reserve.id}
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">{reserve.item.name}</td>
-                          <td className="whitespace-nowrap px-6 py-4">{reserve.start_time !== null ? `${reserve.start_date} ${reserve.start_time}` : reserve.start_date}</td>
-                          <td className="whitespace-nowrap px-6 py-4">{reserve.end_date ? formatDate(reserve.end_date) : `${reserve.start_date} ${reserve.end_time}`}</td>
-                          <td className="whitespace-nowrap px-6 py-4">
-                            {state === "Pendiente" ? (
-                              <>
-                                {state} (
-                                <button className="text-primary-500 underline" onClick={() => handleCancellation(reserve.id)}>
-                                  Cancelar
-                                </button>
-                                )
-                              </>
-                            ) : (
-                              state
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                        return (
+                          <tr key={reserve.id} className={rowClassName}>
+                            <td className="whitespace-nowrap px-6 py-4 font-medium">
+                              #{reserve.id}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">{reserve.item.name}</td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {reserve.start_time !== null
+                                ? `${reserve.start_date} ${reserve.start_time}`
+                                : reserve.start_date}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {reserve.end_date ? formatDate(reserve.end_date) : `${reserve.start_date} ${reserve.end_time}`}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {state === 'Pendiente' ? (
+                                <>
+                                  {state} (
+                                  <button className="text-primary-500 underline" onClick={() => handleCancellation(reserve.id)}>
+                                    Cancelar
+                                  </button>
+                                  )
+                                </>
+                              ) : (
+                                state
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )
       ) : (
         <div className="text-center">
           <div role="status" className="text-gray-100 text-lg">
@@ -149,10 +195,8 @@ export default function Reserves() {
             </svg>Cargando...
           </div>
         </div>
-        <Toaster
-          position="bottom-right"
-        />
       )}
+      <Toaster position="bottom-right" />
     </div>
   )
 }
