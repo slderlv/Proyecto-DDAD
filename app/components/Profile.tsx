@@ -135,13 +135,13 @@ export default function Profile() {
   return (
     <div className="bg-black h-screen w-screen flex items-center justify-center"
       style={{ backgroundImage: 'url(/purple-background4.jpg)', backgroundRepeat: "no-repeat", backgroundSize: "cover" }}>
-      <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
-        onClick={event => window.location.href = "/menu"} />
-      <div className="flex justify-center w-1/2 mx-auto max-w-screen-xl bg-gradient-to-t from-color2 to-color1 shadow-lg rounded-sm">
+      <img className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1" src="mpt.png" alt="Logo"
+        onClick={() => router.push("/menu")} />
+      <div className="flex justify-center sm:min-w-max md:w-1/2 mx-auto max-w-screen-xl bg-gradient-to-t from-color2 to-color1 shadow-lg rounded-sm">
 
-        <div className="flex flex-col justify-center w-3/4 mx-4 my-10 px-20 backdrop-blur-lg p-2 rounded-md bg-white bg-opacity-5">
-          <form className="space-y-3">
-            <div className="col-span-6 sm:col-span-3">
+        <div className="w-3/4 mx-4 my-10 px-20 backdrop-blur-lg p-2 rounded-md bg-white bg-opacity-5">
+          <form className="space-y-3 min-w-full">
+            <div className="w-full">
               <label
                 htmlFor="FirstName"
                 className="block text-base font-medium text-gray-100"
@@ -159,7 +159,7 @@ export default function Profile() {
               />
             </div>
 
-            <div className="col-span-6 sm:col-span-3">
+            <div className="w-full">
               <label
                 htmlFor="LastName"
                 className="block text-base font-medium text-gray-100"
@@ -177,7 +177,7 @@ export default function Profile() {
               />
             </div>
 
-            <div className="col-span-6 sm:col-span-3">
+            <div className="w-full">
               <label htmlFor="Username" className="block text-base font-medium text-gray-100">
                 Apodo
               </label>
