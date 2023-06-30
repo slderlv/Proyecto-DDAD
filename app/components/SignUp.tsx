@@ -86,9 +86,7 @@ export default function SignUp() {
 
               loading: 'Enviando datos...',
               success: (data) => {
-                // console.log(data)
                 if (data) {
-
                   router.push('/sign-in')
                   return '¡Cuenta creada correctamente!';
                 }
@@ -109,16 +107,12 @@ export default function SignUp() {
           }
         };
         handlePost();
-
-
         setLoading(false)
       } catch (error: unknown) {
         setLoading(false)
         console.error(error);
       }
     }
-
-
   }
   useEffect(() => {
     const getCities = async () => {
@@ -145,8 +139,8 @@ export default function SignUp() {
             src="purple-background2.jpg"
             className="absolute inset-0 h-full w-full object-cover opacity-80"
           />
-          <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
-            onClick={event => window.location.href = "/"} />
+          <img className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1" src="mpt.png" alt="Logo"
+            onClick={() => router.push("/")} />
           <div className="hidden lg:relative lg:block lg:p-12">
             <h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
               Bienvenido a Metal Pipes Team
@@ -272,7 +266,7 @@ export default function SignUp() {
               <div className="col-span-6 sm:flex sm:items-center sm:gap-4 ">
                 <button
                   id='loadbutton'
-                  className="inline-block w-1/2 rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+                  className="inline-block w-full rounded-md border border-blue-600 bg-color1 px-12 py-3 text-base font-medium text-white transition hover:bg-color2 hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
                   onClick={handleSignUp}
                   disabled={loading}
                 >{!loading ? (
@@ -287,7 +281,7 @@ export default function SignUp() {
                 </button>
 
                 <p className="mt-4 text-base text-gray-700 font-semibold sm:mt-0">
-                  ¿Ya tienes una cuenta?{" "}
+                  ¿Ya tienes una cuenta?&nbsp;
                   <a href="/sign-in" className="text-gray-700 underline">
                     Inicia sesión
                   </a>

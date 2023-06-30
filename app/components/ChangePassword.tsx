@@ -113,8 +113,8 @@ export default function ChangePassword() {
   return (
     <div className="h-screen w-screen flex items-center justify-center"
       style={{ backgroundImage: 'url(/purple-background3.jpg)' }}>
-      <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
-        onClick={event => window.location.href = "/menu"} />
+      <img className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1" src="mpt.png" alt="Logo"
+        onClick={() => router.push("/menu")} />
       <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 backdrop-blur-lg rounded-md bg-white bg-opacity-25 ">
         <div className="mx-auto max-w-lg text-center">
           <h1 className="text-2xl font-bold sm:text-3xl text-gray-100">Cambia tu contraseña</h1>

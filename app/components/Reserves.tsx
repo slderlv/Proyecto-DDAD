@@ -89,10 +89,10 @@ export default function Reserves() {
   return (
     <div className="w-screen h-screen bg-gradient-radial from-color3 via-color2 to-color1 flex justify-center items-center">
       <img
-        className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6"
+        className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1"
         src="mpt.png"
         alt="Logo"
-        onClick={() => (window.location.href = '/menu')}
+        onClick={() => router.push("/menu")}
       />
       {data ? (
         reserves.length === 0 ? (

@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react'
 import axios from 'axios'
-import { LoginResponse } from '@/config/interfaces'
 import { useRouter } from 'next/navigation'
 import { Toaster, toast } from 'react-hot-toast'
 
@@ -51,28 +50,27 @@ export default function SignIn() {
         const handlePost = async () => {
           try {
             const response = await toast.promise(axios.post(ENDPOINT, data), {
-              
+
               loading: 'Enviando datos...',
               success: (data) => {
-                // console.log(data)
                 if (data) {
                   const { token } = data.data;
                   localStorage.setItem('token', token);
-                  
+
                   router.push('/menu');
                   return '¡Acceso correcto!';
-                } 
+                }
                 return "Error"
               },
               error: (error) => {
                 console.error('¡Ups! Algo salió mal.');
                 console.error('Error:', error);
-        
+
                 setLoading(false);
                 return 'Acceso incorrecto.';
               },
             });
-        
+
             console.log('Respuesta:', response);
           } catch (error) {
             console.error(error);
@@ -88,8 +86,8 @@ export default function SignIn() {
 
   return (
     <div className=" bg-gradient-radial from-color3 via-color2 to-color1 h-screen w-screen flex items-center justify-center">
-      <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6 animate-bounce" src="mpt.png" alt="Logo"
-        onClick={event => router.push("/")} />
+      <img className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1" src="mpt.png" alt="Logo"
+        onClick={() => router.push("/")} />
       <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4 rounded-sm shadow-xl">
         <div className="mx-auto max-w-lg text-center">
           <h1 className="text-2xl font-bold sm:text-3xl">Inicia sesión</h1>
