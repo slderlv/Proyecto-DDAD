@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import { SideMenu } from "../components/SideMenu";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Item, UserProfile } from "@/config/interfaces";
 import { useRouter } from "next/navigation";
 
@@ -18,10 +18,24 @@ export default function Menu() {
   useEffect(() => {
     const getItems = async () => {
       const ENDPOINT = process.env.MS_RESERVES + '/items'
-      const response = await axios.get(ENDPOINT)
-      setItems(response.data.items)
-      setItemsDisplay(response.data.items)
-      setData(true)
+      try {
+        const response = await axios.get(ENDPOINT)
+        const totalPages: number = response.data.meta.totalPages
+        let itemList: Item[] = []
+        for (let i = 1; i < totalPages + 1; i++) {
+          const pageResponse = await axios.get(`${ENDPOINT}?page=${i}`)
+          const pageItems: Item[] = pageResponse.data.items
+          pageItems.forEach(item => {
+            itemList.push(item)
+          });
+        }
+        setItems(itemList)
+        setItemsDisplay(itemList)
+        setData(true)
+      } catch (error: unknown) {
+        console.log(error)
+      }
+
     }
     getItems()
   }, [])
