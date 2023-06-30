@@ -215,14 +215,14 @@ export default function Item() {
 
   return (
     <div className="md:flex items-start justify-center py-12 2xl:px-20 md:px-6 px-4">
-      <img className="w-24 h-24 hover:cursor-pointer absolute top-6 left-6" src="mpt.png" alt="Logo"
-        onClick={event => window.location.href = "/menu"} />
-      <div className="xl:w-2/6 lg:w-2/5 w-80 md:block hidden">
-        <img className="w-full h-full" alt="default book"
+      <img className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1" src="mpt.png" alt="Logo"
+        onClick={() => router.push("/menu")} />
+      <div className="xl:w-2/6 lg:w-2/5 w-80 md:block hidden mt-10">
+        <img className="w-full h-full" alt="default"
           src={item?.id ? `${item?.id}.jpg` : "book.jpg"} />
       </div>
 
-      <div className="xl:w-3/5 md:w-2/3 lg:ml-8 md:ml-6 md:mt-0 mt-6">
+      <div className="xl:w-3/5 md:w-2/3 lg:ml-8 md:ml-6 mt-20">
         <div className="border-b border-gray-200 pb-6">
           <p className="text-sm leading-none text-gray-600 dark:text-gray-300 ">Id: {item?.id}</p>
           <h1 className="lg:text-2xl text-xl font-semibold lg:leading-6 leading-7 text-gray-800 dark:text-white mt-2">{item?.name}</h1>
