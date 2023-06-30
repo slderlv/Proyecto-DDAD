@@ -88,7 +88,7 @@ export default function SignIn() {
     <div className=" bg-gradient-radial from-color3 via-color2 to-color1 h-screen w-screen flex items-center justify-center">
       <img className="w-24 h-24 hover:cursor-pointer fixed top-1 left-1" src="mpt.png" alt="Logo"
         onClick={() => router.push("/")} />
-      <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4 rounded-sm shadow-xl">
+      <div className="mx-auto max-w-md px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-t from-color3 to-color4 rounded-sm shadow-xl">
         <div className="mx-auto max-w-lg text-center">
           <h1 className="text-2xl font-bold sm:text-3xl">Inicia sesión</h1>
 
@@ -214,33 +214,31 @@ export default function SignIn() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-center flex-col">
-              <p className="text-base text-black mb-2">
-                ¿Aún no tienes cuenta?&nbsp;
-                <a className="underline" href="/sign-up">Regístrate</a>
-              </p>
-              <p className="text-base text-black">
-                ¿Olvidaste tu contraseña?&nbsp;
-                <a className="underline" href="/reset-password">Recupérala</a>
-              </p>
-            </div>
-            <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="inline-block rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
-                onClick={handleSignIn}
-                disabled={loading}
-              > {!loading ? (
-                'Inicia Sesión'
-              ) : (
-                <>
-                  Cargando&nbsp;
-                  <i id="button-i" className='fa fa-spinner fa-spin'></i>
-                </>
-              )}
-              </button>
-            </div>
+          <div className="w-full flex items-center justify-center">
+            <p className="text-base text-black mb-2">
+              ¿Aún no tienes cuenta?&nbsp;
+              <a className="underline" href="/sign-up">Regístrate</a>
+            </p>
+            <p className="text-base text-black">
+              ¿Olvidaste tu contraseña?&nbsp;
+              <a className="underline" href="/reset-password">Recupérala</a>
+            </p>
+          </div>
+          <div className="w-full flex items-center justify-between">
+            <button
+              type="submit"
+              className="inline-block w-full rounded-lg bg-color1 px-5 py-3 text-base font-medium text-white transition hover:bg-color2"
+              onClick={handleSignIn}
+              disabled={loading}
+            > {!loading ? (
+              'Inicia Sesión'
+            ) : (
+              <>
+                Cargando&nbsp;
+                <i id="button-i" className='fa fa-spinner fa-spin'></i>
+              </>
+            )}
+            </button>
           </div>
         </form>
       </div>
